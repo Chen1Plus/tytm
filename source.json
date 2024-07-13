@@ -1,10 +1,10 @@
 {
-    "version": "0.1",
+    "version": 1,
     "themes": [
         {
-            "id": "typora-theme-next",
+            "id": "next",
             "name": "Typora Theme Next",
-            "version": "",
+            "version": "1.1.1",
             "source": {
                 "type": "Zip",
                 "value": {
