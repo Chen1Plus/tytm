@@ -1,8 +1,17 @@
-use std::{fs, io, path::Path};
+use std::{
+    fs, io,
+    path::{Path, PathBuf},
+};
+
+use lazy_static::lazy_static;
 
 pub(crate) use dirs::data_dir;
 pub(crate) use tempfile::tempfile;
 pub(crate) use tempfile::TempDir;
+
+lazy_static! {
+    pub static ref THEME_DIR: PathBuf = data_dir().unwrap().join("Typora/themes");
+}
 
 /// Move all files and directories from `src` to `dst`.  
 /// You should ensure that both `src` and `dst` exist and are directories.  
