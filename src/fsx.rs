@@ -41,18 +41,15 @@ where
     P: AsRef<Path>,
     Q: AsRef<Path>,
 {
-    let src = src.as_ref();
-    let dst = dst.as_ref();
-
-    debug_assert!(src.exists() && src.is_dir());
-    debug_assert!(dst.exists() && dst.is_dir());
+    debug_assert!(src.as_ref().exists() && src.as_ref().is_dir());
+    debug_assert!(dst.as_ref().exists() && dst.as_ref().is_dir());
 
     for item in fs::read_dir(src)? {
         let item = item?;
 
         let ty = item.file_type()?;
         let path = item.path();
-        let dst_path = dst.join(item.file_name());
+        let dst_path = dst.as_ref().join(item.file_name());
 
         if ty.is_dir() {
             fs::create_dir(&dst_path)?;
