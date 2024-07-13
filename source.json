@@ -1,0 +1,21 @@
+{
+    "version": "0.1",
+    "themes": [
+        {
+            "id": "typora-theme-next",
+            "name": "Typora Theme Next",
+            "version": "",
+            "source": {
+                "type": "Zip",
+                "value": {
+                    "url": "https://github.com/billchen2k/typora-theme-next/releases/download/1.1.1/typora-theme-next.zip",
+                    "content": "./",
+                    "excludes": [
+                        "__MACOSX",
+                        "README.md"
+                    ]
+                }
+            }
+        }
+    ]
+}
