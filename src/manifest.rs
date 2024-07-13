@@ -1,3 +1,4 @@
+use std::rc::Rc;
 use std::{fs::File, path::Path};
 
 use anyhow::Result;
@@ -9,7 +10,7 @@ use crate::source::Source;
 
 #[derive(Serialize, Deserialize)]
 pub(crate) struct Registry {
-    version: String,
+    version: u8,
     themes: Vec<Theme>,
 }
 
@@ -18,17 +19,34 @@ impl Registry {
         json::from_reader(File::open(path)?).map_err(Into::into)
     }
 
+    pub(crate) fn save_to<P: AsRef<Path>>(&self, path: P) -> Result<()> {
+        json::to_writer(File::create(path)?, self).map_err(Into::into)
+    }
+
     pub(crate) fn get_theme(&self, id: &str) -> Option<&Theme> {
         self.themes.iter().find(|&theme| theme.id == id)
     }
+
+    pub(crate) fn add_theme(&mut self, theme: Theme) {
+        self.themes.push(theme);
+    }
 }
 
-#[derive(Serialize, Deserialize)]
+impl Default for Registry {
+    fn default() -> Self {
+        Self {
+            version: 1,
+            themes: Vec::new(),
+        }
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize)]
 pub(crate) struct Theme {
     id: String,
     name: String,
     version: String,
-    source: Box<dyn Source>,
+    source: Rc<dyn Source>,
 }
 
 impl Theme {

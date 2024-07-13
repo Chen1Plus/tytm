@@ -35,7 +35,11 @@ enum Commands {
 }
 
 fn main() {
-    let registry = Registry::from_file("source.json").unwrap();
+    let avail = Registry::from_file("source.json").unwrap();
+
+    let mut installed =
+        Registry::from_file(fsx::data_dir().unwrap().join("Typora/themes/pkgs.json"))
+            .unwrap_or_default();
 
     let cli = Cli::parse();
     match &cli.command {
@@ -44,7 +48,12 @@ fn main() {
         }
 
         Commands::Add { theme } => {
-            registry.get_theme(theme).unwrap().install().unwrap();
+            let theme = avail.get_theme(theme).unwrap();
+            theme.install().unwrap();
+            installed.add_theme(theme.clone());
+            installed
+                .save_to(fsx::data_dir().unwrap().join("Typora/themes/pkgs.json"))
+                .unwrap();
         }
 
         Commands::Remove { theme } => {
