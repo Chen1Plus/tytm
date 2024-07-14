@@ -54,7 +54,9 @@ where
         let dst_path = dst.as_ref().join(item.file_name());
 
         if ty.is_dir() {
-            fs::create_dir(&dst_path)?;
+            if !dst_path.exists() {
+                fs::create_dir(&dst_path)?;
+            }
             move_dir(path, &dst_path)?;
         } else if ty.is_file() {
             fs::rename(path, &dst_path)?;
