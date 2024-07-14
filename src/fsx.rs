@@ -9,10 +9,17 @@ pub(crate) use tempfile::tempfile;
 pub(crate) use tempfile::TempDir;
 
 lazy_static! {
-    pub static ref THEME_DIR: PathBuf = dirs::data_dir()
-        .expect("Failed to find user's data directory")
-        .join("Typora")
-        .join("themes");
+    /// The user's data directory.
+    static ref DATA_DIR: PathBuf = dirs::data_dir().expect("Failed to find user's data directory");
+
+    /// The directory where Typora themes are stored.
+    pub static ref THEME_DIR: PathBuf = DATA_DIR.join("Typora").join("themes");
+
+    /// The directory where TyTM stores its data.
+    pub static ref TYTM_DIR: PathBuf = DATA_DIR.join("tytm");
+
+    /// The directory where TyTM stores manifests.
+    pub static ref MANIFEST_DIR: PathBuf = TYTM_DIR.join("manifest");
 }
 
 /// Recursively scan a directory and return all files.

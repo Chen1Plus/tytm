@@ -1,10 +1,11 @@
 use clap::{Parser, Subcommand};
 
 mod fsx;
-mod manifest;
+// mod manifest;
 mod pkg;
 
-use manifest::{InstalledPkgList, PkgList};
+// use manifest::{InstalledPkgList, PkgList};
+use pkg::{InstalledPackage, Package};
 
 #[derive(Parser)]
 #[command(
@@ -20,6 +21,9 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Update the manifest
+    Update,
+
     /// Add a new theme
     Add { theme: String },
 
