@@ -1,6 +1,6 @@
 use std::{
     fs,
-    path::{self, Path, PathBuf},
+    path::{self, PathBuf},
 };
 
 use anyhow::Result;
@@ -10,10 +10,7 @@ use zip::ZipArchive;
 
 use crate::fsx;
 
-#[typetag::serde(tag = "type", content = "value")]
-pub(crate) trait Source {
-    fn save_to(&self, dst: &Path) -> Result<()>;
-}
+use super::Source;
 
 #[derive(Serialize, Deserialize)]
 pub struct Zip {
@@ -24,7 +21,7 @@ pub struct Zip {
 
 #[typetag::serde]
 impl Source for Zip {
-    fn save_to(&self, directory: &Path) -> Result<()> {
+    fn install(&self) -> Result<Vec<PathBuf>> {
         let tmp_dir = fsx::TempDir::new()?;
         let tmp_dir = path::absolute(tmp_dir.path())?;
         let content_dir;
@@ -50,8 +47,17 @@ impl Source for Zip {
             }
         }
 
-        fs::create_dir_all(&directory)?;
-        fsx::move_dir(content_dir, directory)?;
-        Ok(())
+        let paths = fsx::scan_dir(path::absolute(&content_dir)?)?
+            .into_iter()
+            .map(|p| {
+                (*fsx::THEME_DIR.clone())
+                    .to_path_buf()
+                    .join(p.strip_prefix(&content_dir).unwrap())
+            })
+            .collect();
+
+        fs::create_dir_all(&*fsx::THEME_DIR)?;
+        fsx::move_dir(content_dir, &*fsx::THEME_DIR)?;
+        Ok(paths)
     }
 }
