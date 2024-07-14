@@ -1,10 +1,8 @@
 use clap::{Parser, Subcommand};
 
 mod fsx;
-// mod manifest;
 mod pkg;
 
-// use manifest::{InstalledPkgList, PkgList};
 use pkg::{InstalledPackage, Package};
 
 #[derive(Parser)]
