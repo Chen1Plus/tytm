@@ -1,12 +1,10 @@
-use std::path::{Path, PathBuf};
-
 use clap::{Parser, Subcommand};
 
 mod fsx;
 mod manifest;
-mod source;
+mod pkg;
 
-use manifest::Registry;
+use manifest::{InstalledPkgList, PkgList};
 
 #[derive(Parser)]
 #[command(
@@ -35,11 +33,10 @@ enum Commands {
 }
 
 fn main() {
-    let avail = Registry::from_file("source.json").unwrap();
+    let avail = PkgList::from_file("source.json").unwrap();
 
     let mut installed =
-        Registry::from_file(fsx::data_dir().unwrap().join("Typora/themes/pkgs.json"))
-            .unwrap_or_default();
+        InstalledPkgList::from_file(&*fsx::THEME_DIR.join("pkgs.json")).unwrap_or_default();
 
     let cli = Cli::parse();
     match &cli.command {
@@ -48,16 +45,20 @@ fn main() {
         }
 
         Commands::Add { theme } => {
-            let theme = avail.get_theme(theme).unwrap();
-            theme.install().unwrap();
-            installed.add_theme(theme.clone());
+            let pkg = avail.get_pkg(&theme).unwrap();
+            installed.add_pkg(pkg.install().unwrap());
             installed
-                .save_to(fsx::data_dir().unwrap().join("Typora/themes/pkgs.json"))
+                .save_to(&*fsx::THEME_DIR.join("pkgs.json"))
                 .unwrap();
         }
 
         Commands::Remove { theme } => {
-            dbg!("[todo] remove {}", theme);
+            let pkg = installed.get_pkg(&theme).unwrap();
+            pkg.uninstall().unwrap();
+            installed.rm_pkg(&theme);
+            installed
+                .save_to(&*fsx::THEME_DIR.join("pkgs.json"))
+                .unwrap();
         }
     }
 }

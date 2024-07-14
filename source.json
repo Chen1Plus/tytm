@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "themes": [
+    "pkgs": [
         {
             "id": "next",
             "name": "Typora Theme Next",
