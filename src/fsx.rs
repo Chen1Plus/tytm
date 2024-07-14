@@ -5,12 +5,14 @@ use std::{
 
 use lazy_static::lazy_static;
 
-pub(crate) use dirs::data_dir;
 pub(crate) use tempfile::tempfile;
 pub(crate) use tempfile::TempDir;
 
 lazy_static! {
-    pub static ref THEME_DIR: PathBuf = data_dir().unwrap().join("Typora/themes");
+    pub static ref THEME_DIR: PathBuf = dirs::data_dir()
+        .expect("Failed to find user's data directory")
+        .join("Typora")
+        .join("themes");
 }
 
 /// Recursively scan a directory and return all files.
