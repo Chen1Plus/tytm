@@ -37,28 +37,27 @@ enum Commands {
 }
 
 fn main() {
-    let avail = PkgList::from_file("source.json").unwrap();
+    // let avail = PkgList::from_file("source.json").unwrap();
 
-    let mut installed =
-        InstalledPkgList::from_file(fsx::THEME_DIR.join("pkgs.json")).unwrap_or_default();
+    // let mut installed =
+    //     InstalledPkgList::from_file(fsx::THEME_DIR.join("pkgs.json")).unwrap_or_default();
 
     let cli = Cli::parse();
-    match &cli.command {
-        Commands::List => {
-            dbg!("[todo] list");
+    match cli.command {
+        Commands::Update => {
+            pkg::update_manifest().unwrap();
         }
 
         Commands::Add { theme } => {
-            let pkg = avail.get_pkg(&theme).unwrap();
-            installed.add_pkg(pkg.install().unwrap());
-            installed.save_to(fsx::THEME_DIR.join("pkgs.json")).unwrap();
+            Package::get(theme).unwrap().install().unwrap();
         }
 
         Commands::Remove { theme } => {
-            let pkg = installed.get_pkg(&theme).unwrap();
-            pkg.uninstall().unwrap();
-            installed.rm_pkg(&theme);
-            installed.save_to(fsx::THEME_DIR.join("pkgs.json")).unwrap();
+            InstalledPackage::get(theme).unwrap().uninstall().unwrap();
+        }
+
+        Commands::List => {
+            dbg!("[todo] list");
         }
     }
 }
