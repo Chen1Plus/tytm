@@ -7,7 +7,7 @@ Current features:
 - [x] remove a theme
 - [ ] list installed themes
 
-Usage:
+## Usage:
 ```bash
 ./tytm.exe update
 ./tytm.exe add <THEME_ID>
