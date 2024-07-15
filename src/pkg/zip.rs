@@ -23,8 +23,7 @@ pub struct Zip {
 impl Source for Zip {
     fn install(&self) -> Result<Vec<PathBuf>> {
         let tmp_dir = fsx::TempDir::new()?;
-        let tmp_dir = path::absolute(tmp_dir.path())?;
-        let content_dir;
+        let content_dir = path::absolute(tmp_dir.path().join(&self.content))?;
         {
             let mut file = fsx::tempfile()?;
             println!("Downloading {}", self.url);
@@ -32,8 +31,7 @@ impl Source for Zip {
             println!("Installing ...");
             ZipArchive::new(file)?.extract(&tmp_dir)?;
 
-            debug_assert!(self.content.is_relative());
-            content_dir = path::absolute(tmp_dir.join(&self.content))?;
+            // debug_assert!(self.content.is_relative());
             debug_assert!(content_dir.exists());
         }
 
