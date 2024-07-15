@@ -1,0 +1,13 @@
+{
+    "id": "typora-default",
+    "name": "Typora Default Themes",
+    "version": "Unknown",
+    "source": {
+        "type": "Zip",
+        "value": {
+            "url": "https://github.com/typora/typora-default-themes/archive/master.zip",
+            "content": "typora-default-themes-master/themes",
+            "excludes": []
+        }
+    }
+}
