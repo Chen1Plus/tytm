@@ -10,6 +10,7 @@ use serde_json as json;
 
 use crate::fsx::{self, dirs};
 
+mod git;
 mod zip;
 
 pub(crate) fn update_manifest() -> Result<()> {
