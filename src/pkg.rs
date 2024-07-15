@@ -21,7 +21,7 @@ pub(crate) fn update_manifest() -> Result<()> {
 
 #[derive(Serialize, Deserialize)]
 pub(crate) struct Package {
-    pub(crate) id: String,
+    id: String,
     name: String,
     version: String,
     source: Rc<dyn Source>,
@@ -48,7 +48,7 @@ impl Package {
 
 #[derive(Default, Serialize, Deserialize)]
 pub(crate) struct InstalledPackage {
-    pub(crate) id: String,
+    id: String,
     name: String,
     version: String,
     added_files: Vec<PathBuf>,
