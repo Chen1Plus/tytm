@@ -1,0 +1,13 @@
+{
+    "id": "onedark",
+    "name": "OneDark",
+    "version": "1.10",
+    "source": {
+        "type": "Zip",
+        "value": {
+            "url": "https://github.com/sweatran/typora-onedark-theme/releases/download/v1.10/typora-onedark-theme-v1.10.zip",
+            "content": "./",
+            "excludes": []
+        }
+    }
+}

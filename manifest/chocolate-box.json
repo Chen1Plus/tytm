@@ -1,0 +1,13 @@
+{
+    "id": "chocolate-box",
+    "name": "Chocolate Box",
+    "version": "Latest",
+    "source": {
+        "type": "Zip",
+        "value": {
+            "url": "https://github.com/Beanie127/typora-ChocolateBox-theme/archive/master.zip",
+            "content": "typora-ChocolateBox-theme-main/latest",
+            "excludes": []
+        }
+    }
+}
