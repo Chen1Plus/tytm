@@ -8,20 +8,14 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use serde_json as json;
 
-use crate::fsx;
+use crate::fsx::{self, dirs};
 
 mod zip;
 
 pub(crate) fn update_manifest() -> Result<()> {
     let tmp_dir = fsx::TempDir::new()?;
     git2::Repository::clone("https://github.com/Chen1Plus/tytm", &tmp_dir)?;
-    if !fsx::MANIFEST_DIR.exists() {
-        fs::create_dir_all(&*fsx::MANIFEST_DIR)?;
-    }
-    if !fsx::THEME_DIR.join("tytm-pkgs").exists() {
-        fs::create_dir(fsx::THEME_DIR.join("tytm-pkgs"))?;
-    }
-    fsx::move_dir(tmp_dir.path().join("manifest"), &*fsx::MANIFEST_DIR)?;
+    fsx::move_dir(tmp_dir.path().join("manifest"), &*dirs::TYTM_MANIFEST)?;
     Ok(())
 }
 
@@ -35,16 +29,12 @@ pub(crate) struct Package {
 
 impl Package {
     pub(crate) fn get(id: String) -> Result<Self> {
-        json::from_reader(File::open(fsx::MANIFEST_DIR.join(id + ".json"))?).map_err(Into::into)
+        json::from_reader(File::open(dirs::TYTM_MANIFEST.join(id + ".json"))?).map_err(Into::into)
     }
 
     pub(crate) fn install(&self) -> Result<()> {
         json::to_writer(
-            File::create(
-                fsx::THEME_DIR
-                    .join("tytm-pkgs")
-                    .join(self.id.clone() + ".json"),
-            )?,
+            File::create(dirs::TYPORA_MANIFEST.join(self.id.clone() + ".json"))?,
             &(InstalledPackage {
                 id: self.id.clone(),
                 name: self.name.clone(),
@@ -66,10 +56,7 @@ pub(crate) struct InstalledPackage {
 
 impl InstalledPackage {
     pub(crate) fn get(id: String) -> Result<Self> {
-        json::from_reader(File::open(
-            fsx::THEME_DIR.join("tytm-pkgs").join(id + ".json"),
-        )?)
-        .map_err(Into::into)
+        json::from_reader(File::open(dirs::TYPORA_MANIFEST.join(id + ".json"))?).map_err(Into::into)
     }
 
     pub(crate) fn uninstall(&self) -> Result<()> {
@@ -77,11 +64,7 @@ impl InstalledPackage {
             debug_assert!(file.exists() && file.is_file());
             fs::remove_file(file)?;
         }
-        fs::remove_file(
-            fsx::THEME_DIR
-                .join("tytm-pkgs")
-                .join(self.id.clone() + ".json"),
-        )?;
+        fs::remove_file(dirs::TYPORA_MANIFEST.join(self.id.clone() + ".json"))?;
         Ok(())
     }
 }

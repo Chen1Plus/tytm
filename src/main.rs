@@ -35,7 +35,7 @@ enum Commands {
 }
 
 fn main() {
-    fsx::init_dirs();
+    fsx::dirs::init();
 
     let cli = Cli::parse();
     match cli.command {

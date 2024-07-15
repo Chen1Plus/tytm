@@ -3,30 +3,49 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use lazy_static::lazy_static;
-
 pub(crate) use tempfile::tempfile;
 pub(crate) use tempfile::TempDir;
 
-lazy_static! {
-    /// The user's data directory.
-    static ref DATA_DIR: PathBuf = dirs::data_dir().expect("Failed to find user's data directory");
+pub(crate) mod dirs {
+    use std::{fs, path::PathBuf};
 
-    /// The directory where Typora themes are stored.
-    pub static ref THEME_DIR: PathBuf = DATA_DIR.join("Typora").join("themes");
+    lazy_static::lazy_static! {
+        /// The user's data directory.
+        static ref DATA: PathBuf = dirs::data_dir().expect("Failed to find user's data directory");
 
-    /// The directory where TyTM stores its data.
-    pub static ref TYTM_DIR: PathBuf = DATA_DIR.join("tytm");
+        pub(crate) static ref TYPORA: PathBuf = DATA.join("Typora");
+        pub(crate) static ref TYPORA_THEME: PathBuf = TYPORA.join("themes");
+        pub(crate) static ref TYPORA_MANIFEST: PathBuf = TYPORA_THEME.join("tytm-pkgs");
 
-    /// The directory where TyTM stores manifests.
-    pub static ref MANIFEST_DIR: PathBuf = TYTM_DIR.join("manifest");
-}
+        pub(crate) static ref TYTM: PathBuf = DATA.join("tytm");
+        pub(crate) static ref TYTM_MANIFEST: PathBuf = TYTM.join("manifest");
+    }
 
-pub(crate) fn init_dirs() {
-    assert!(
-        THEME_DIR.exists() && THEME_DIR.is_dir(),
-        "Typora themes directory not found"
-    );
+    pub(crate) fn init() {
+        assert!(
+            TYPORA.exists() && TYPORA.is_dir(),
+            "Typora directory not found"
+        );
+        assert!(
+            TYPORA_THEME.exists() && TYPORA_THEME.is_dir(),
+            "Typora themes directory not found"
+        );
+
+        if !TYPORA_MANIFEST.exists() {
+            fs::create_dir(&*TYPORA_MANIFEST).expect("Failed to create Typora manifest directory");
+        }
+        assert!(TYPORA_MANIFEST.is_dir());
+
+        if !TYTM.exists() {
+            fs::create_dir(&*TYTM).expect("Failed to create TyTM directory");
+        }
+        assert!(TYTM.is_dir());
+
+        if !TYTM_MANIFEST.exists() {
+            fs::create_dir(&*TYTM_MANIFEST).expect("Failed to create TyTM manifest directory");
+        }
+        assert!(TYTM_MANIFEST.is_dir());
+    }
 }
 
 /// Recursively scan a directory and return all files.

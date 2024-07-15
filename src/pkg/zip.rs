@@ -8,7 +8,7 @@ use reqwest::blocking;
 use serde::{Deserialize, Serialize};
 use zip::ZipArchive;
 
-use crate::fsx;
+use crate::fsx::{self, dirs};
 
 use super::Source;
 
@@ -50,14 +50,14 @@ impl Source for Zip {
         let paths = fsx::scan_dir(path::absolute(&content_dir)?)?
             .into_iter()
             .map(|p| {
-                (*fsx::THEME_DIR.clone())
+                dirs::TYPORA_THEME
                     .to_path_buf()
                     .join(p.strip_prefix(&content_dir).unwrap())
             })
             .collect();
 
-        fs::create_dir_all(&*fsx::THEME_DIR)?;
-        fsx::move_dir(content_dir, &*fsx::THEME_DIR)?;
+        fs::create_dir_all(&*dirs::TYPORA_THEME)?;
+        fsx::move_dir(content_dir, &*dirs::TYPORA_THEME)?;
         Ok(paths)
     }
 }
