@@ -1,0 +1,13 @@
+{
+    "id": "onedark",
+    "name": "Blackout",
+    "version": "1.0.7",
+    "source": {
+        "type": "Zip",
+        "value": {
+            "url": "https://github.com/obscurefreeman/typora_theme_blackout/releases/download/V1.0.7/blackout_theme.zip",
+            "content": "./",
+            "excludes": []
+        }
+    }
+}
