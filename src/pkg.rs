@@ -4,7 +4,7 @@ use std::{
     rc::Rc,
 };
 
-use anyhow::{Ok, Result};
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use serde_json as json;
 

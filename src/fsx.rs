@@ -22,6 +22,13 @@ lazy_static! {
     pub static ref MANIFEST_DIR: PathBuf = TYTM_DIR.join("manifest");
 }
 
+pub(crate) fn init_dirs() {
+    assert!(
+        THEME_DIR.exists() && THEME_DIR.is_dir(),
+        "Typora themes directory not found"
+    );
+}
+
 /// Recursively scan a directory and return all files.
 /// You should ensure that `path` exists and is a directory.
 pub(crate) fn scan_dir<P>(path: P) -> io::Result<Vec<PathBuf>>

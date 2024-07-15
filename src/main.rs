@@ -35,10 +35,7 @@ enum Commands {
 }
 
 fn main() {
-    // let avail = PkgList::from_file("source.json").unwrap();
-
-    // let mut installed =
-    //     InstalledPkgList::from_file(fsx::THEME_DIR.join("pkgs.json")).unwrap_or_default();
+    fsx::init_dirs();
 
     let cli = Cli::parse();
     match cli.command {
