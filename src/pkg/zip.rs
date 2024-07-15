@@ -56,7 +56,6 @@ impl Source for Zip {
             })
             .collect();
 
-        fs::create_dir_all(&*dirs::TYPORA_THEME)?;
         fsx::move_dir(content_dir, &*dirs::TYPORA_THEME)?;
         Ok(paths)
     }
