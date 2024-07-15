@@ -3,10 +3,10 @@
     "name": "Chocolate Box",
     "version": "Latest",
     "source": {
-        "type": "Zip",
+        "type": "Git",
         "value": {
-            "url": "https://github.com/Beanie127/typora-ChocolateBox-theme/archive/master.zip",
-            "content": "typora-ChocolateBox-theme-main/latest",
+            "url": "https://github.com/Beanie127/typora-ChocolateBox-theme",
+            "content": "latest",
             "excludes": []
         }
     }
