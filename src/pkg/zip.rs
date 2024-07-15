@@ -27,7 +27,9 @@ impl Source for Zip {
         let content_dir;
         {
             let mut file = fsx::tempfile()?;
+            println!("Downloading {}", self.url);
             blocking::get(&self.url)?.copy_to(&mut file)?;
+            println!("Installing ...");
             ZipArchive::new(file)?.extract(&tmp_dir)?;
 
             debug_assert!(self.content.is_relative());
@@ -57,6 +59,7 @@ impl Source for Zip {
             .collect();
 
         fsx::move_dir(content_dir, &*dirs::TYPORA_THEME)?;
+        println!("Done");
         Ok(paths)
     }
 }
