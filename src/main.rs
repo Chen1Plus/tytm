@@ -1,12 +1,9 @@
-use std::path::{Path, PathBuf};
-
 use clap::{Parser, Subcommand};
 
 mod fsx;
-mod manifest;
-mod source;
+mod pkg;
 
-use manifest::Registry;
+use pkg::{InstalledPackage, Package};
 
 #[derive(Parser)]
 #[command(
@@ -22,6 +19,9 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Update the manifest
+    Update,
+
     /// Add a new theme
     Add { theme: String },
 
@@ -35,29 +35,24 @@ enum Commands {
 }
 
 fn main() {
-    let avail = Registry::from_file("source.json").unwrap();
-
-    let mut installed =
-        Registry::from_file(fsx::data_dir().unwrap().join("Typora/themes/pkgs.json"))
-            .unwrap_or_default();
+    fsx::dirs::init();
 
     let cli = Cli::parse();
-    match &cli.command {
-        Commands::List => {
-            dbg!("[todo] list");
+    match cli.command {
+        Commands::Update => {
+            pkg::update_manifest().unwrap();
         }
 
         Commands::Add { theme } => {
-            let theme = avail.get_theme(theme).unwrap();
-            theme.install().unwrap();
-            installed.add_theme(theme.clone());
-            installed
-                .save_to(fsx::data_dir().unwrap().join("Typora/themes/pkgs.json"))
-                .unwrap();
+            Package::get(theme).unwrap().install().unwrap();
         }
 
         Commands::Remove { theme } => {
-            dbg!("[todo] remove {}", theme);
+            InstalledPackage::get(theme).unwrap().uninstall().unwrap();
+        }
+
+        Commands::List => {
+            dbg!("[todo] list");
         }
     }
 }
