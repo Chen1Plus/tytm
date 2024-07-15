@@ -44,11 +44,17 @@ fn main() {
         }
 
         Commands::Add { theme } => {
-            Package::get(theme).unwrap().install().unwrap();
+            Package::get(theme)
+                .expect("Theme not found")
+                .install()
+                .unwrap();
         }
 
         Commands::Remove { theme } => {
-            InstalledPackage::get(theme).unwrap().uninstall().unwrap();
+            InstalledPackage::get(theme)
+                .expect("Theme not installed")
+                .uninstall()
+                .unwrap();
         }
 
         Commands::List => {
