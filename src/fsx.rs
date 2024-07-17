@@ -1,7 +1,4 @@
-use std::{
-    fs, io,
-    path::{Path, PathBuf},
-};
+use std::{fs, io, path::Path};
 
 pub(crate) use tempfile::tempfile;
 pub(crate) use tempfile::TempDir;
@@ -46,26 +43,6 @@ pub(crate) mod dirs {
         }
         assert!(TYTM_MANIFEST.is_dir());
     }
-}
-
-/// Recursively scan a directory and return all files.
-/// You should ensure that `path` exists and is a directory.
-pub(crate) fn scan_dir<P>(path: P) -> io::Result<Vec<PathBuf>>
-where
-    P: AsRef<Path>,
-{
-    debug_assert!(path.as_ref().exists() && path.as_ref().is_dir());
-
-    let mut res = Vec::new();
-    for path in fs::read_dir(path)?.map(|e| e.map(|e| e.path())) {
-        let path = path?;
-        if path.is_dir() {
-            res.extend(scan_dir(&path)?);
-        } else if path.is_file() {
-            res.push(path);
-        }
-    }
-    Ok(res)
 }
 
 /// Move all files and directories from `src` to `dst`.  

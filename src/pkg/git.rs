@@ -5,6 +5,7 @@ use std::{
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
+use walkdir::WalkDir;
 
 use crate::fsx::{self, dirs};
 
@@ -41,9 +42,11 @@ impl Source for Git {
             }
         }
 
-        let paths = fsx::scan_dir(path::absolute(&content_dir)?)?
+        let paths = WalkDir::new(&content_dir)
             .into_iter()
-            .map(|p| dirs::TYPORA_THEME.join(p.strip_prefix(&content_dir).unwrap()))
+            .filter_map(|e| e.ok())
+            .filter(|e| e.path().is_file())
+            .map(|e| e.path().to_path_buf())
             .collect();
 
         fsx::move_dir(content_dir, dirs::TYPORA_THEME.as_path())?;
