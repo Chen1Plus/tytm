@@ -4,6 +4,7 @@ mod fsx;
 mod pkg;
 
 use pkg::{InstalledPackage, Package};
+use walkdir::WalkDir;
 
 #[derive(Parser)]
 #[command(
@@ -58,7 +59,13 @@ fn main() {
         }
 
         Commands::List => {
-            dbg!("[todo] list");
+            println!("Installed themes:");
+            WalkDir::new(&*fsx::dirs::TYPORA_MANIFEST)
+                .into_iter()
+                .filter_map(|e| e.ok())
+                .filter(|e| e.path().is_file())
+                .map(|e| e.path().file_stem().unwrap().to_owned())
+                .for_each(|e| println!("{}", e.to_str().unwrap()));
         }
     }
 }
