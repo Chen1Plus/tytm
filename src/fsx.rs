@@ -57,8 +57,8 @@ where
     debug_assert!(path.as_ref().exists() && path.as_ref().is_dir());
 
     let mut res = Vec::new();
-    for entry in fs::read_dir(path)? {
-        let path = entry?.path();
+    for path in fs::read_dir(path)?.map(|e| e.map(|e| e.path())) {
+        let path = path?;
         if path.is_dir() {
             res.extend(scan_dir(&path)?);
         } else if path.is_file() {
