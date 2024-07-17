@@ -43,11 +43,7 @@ impl Source for Git {
 
         let paths = fsx::scan_dir(path::absolute(&content_dir)?)?
             .into_iter()
-            .map(|p| {
-                dirs::TYPORA_THEME
-                    .to_path_buf()
-                    .join(p.strip_prefix(&content_dir).unwrap())
-            })
+            .map(|p| dirs::TYPORA_THEME.join(p.strip_prefix(&content_dir).unwrap()))
             .collect();
 
         fsx::move_dir(content_dir, dirs::TYPORA_THEME.as_path())?;
