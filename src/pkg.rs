@@ -16,7 +16,10 @@ mod zip;
 pub(crate) fn update_manifest() -> Result<()> {
     let tmp_dir = fsx::TempDir::new()?;
     git2::Repository::clone("https://github.com/Chen1Plus/tytm", &tmp_dir)?;
-    fsx::move_dir(tmp_dir.path().join("manifest"), &*dirs::TYTM_MANIFEST)?;
+    fsx::move_dir(
+        tmp_dir.path().join("manifest"),
+        dirs::TYTM_MANIFEST.as_path(),
+    )?;
     Ok(())
 }
 

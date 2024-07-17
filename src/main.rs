@@ -60,7 +60,7 @@ fn main() {
 
         Commands::List => {
             println!("Installed themes:");
-            WalkDir::new(&*fsx::dirs::TYPORA_MANIFEST)
+            WalkDir::new(fsx::dirs::TYPORA_MANIFEST.as_path())
                 .into_iter()
                 .filter_map(|e| e.ok())
                 .filter(|e| e.path().is_file())
