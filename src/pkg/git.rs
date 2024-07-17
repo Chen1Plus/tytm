@@ -28,15 +28,16 @@ impl Source for Git {
         debug_assert!(content_dir.exists());
         println!("Installing ...");
 
-        for ex in &self.excludes {
-            debug_assert!(ex.is_relative());
-            let ex_path = path::absolute(content_dir.join(&ex))?;
-            debug_assert!(ex_path.exists());
-
-            if ex_path.is_dir() {
-                fs::remove_dir_all(ex_path)?;
-            } else if ex_path.is_file() {
-                fs::remove_file(ex_path)?;
+        for path in self
+            .excludes
+            .iter()
+            .map(|p| path::absolute(content_dir.join(p)))
+        {
+            let path = path?;
+            if path.is_dir() {
+                fs::remove_dir_all(path)?;
+            } else if path.is_file() {
+                fs::remove_file(path)?;
             }
         }
 
@@ -49,7 +50,7 @@ impl Source for Git {
             })
             .collect();
 
-        fsx::move_dir(content_dir, &*dirs::TYPORA_THEME)?;
+        fsx::move_dir(content_dir, dirs::TYPORA_THEME.as_path())?;
         println!("Done");
         Ok(paths)
     }
