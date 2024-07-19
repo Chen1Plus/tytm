@@ -15,11 +15,13 @@ mod zip;
 
 pub(crate) fn update_manifest() -> Result<()> {
     let tmp_dir = fsx::TempDir::new()?;
+    println!("Fetching manifest from GitHub...");
     git2::Repository::clone("https://github.com/Chen1Plus/tytm", &tmp_dir)?;
     fsx::move_dir(
         tmp_dir.path().join("manifest"),
         dirs::TYTM_MANIFEST.as_path(),
     )?;
+    println!("Manifest updated.");
     Ok(())
 }
 
