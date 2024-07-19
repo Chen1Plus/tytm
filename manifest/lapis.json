@@ -1,0 +1,15 @@
+{
+    "id": "lapis",
+    "name": "Lapis",
+    "version": "1.1.2",
+    "source": {
+        "type": "Zip",
+        "value": {
+            "url": "https://github.com/YiNNx/typora-theme-lapis/releases/download/v1.1.2/typora-theme-lapis.zip",
+            "content": "./",
+            "excludes": [
+                "License"
+            ]
+        }
+    }
+}
