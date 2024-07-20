@@ -6,18 +6,43 @@ pub(crate) use tempfile::TempDir;
 pub(crate) mod dirs {
     use std::{fs, path::PathBuf};
 
+    #[cfg(debug_assertions)]
     lazy_static::lazy_static! {
         /// The user's data directory.
         static ref DATA: PathBuf = dirs::data_dir().expect("Failed to find user's data directory");
 
-        pub(crate) static ref TYPORA: PathBuf = DATA.join("Typora");
+        static ref TYPORA: PathBuf = DATA.join("Typora");
+        pub(crate) static ref TYPORA_THEME: PathBuf = PathBuf::from("debug-dirs").join("typora-themes");
+        pub(crate) static ref TYPORA_MANIFEST: PathBuf = TYPORA_THEME.join("tytm-pkgs");
+
+        static ref TYTM: PathBuf = DATA.join("tytm");
+        pub(crate) static ref TYTM_CACHE: PathBuf = PathBuf::from("debug-dirs").join("tytm-cache");
+        pub(crate) static ref TYTM_MANIFEST: PathBuf = PathBuf::from("manifest");
+    }
+
+    #[cfg(not(debug_assertions))]
+    lazy_static::lazy_static! {
+        /// The user's data directory.
+        static ref DATA: PathBuf = dirs::data_dir().expect("Failed to find user's data directory");
+
+        static ref TYPORA: PathBuf = DATA.join("Typora");
         pub(crate) static ref TYPORA_THEME: PathBuf = TYPORA.join("themes");
         pub(crate) static ref TYPORA_MANIFEST: PathBuf = TYPORA_THEME.join("tytm-pkgs");
 
-        pub(crate) static ref TYTM: PathBuf = DATA.join("tytm");
+        static ref TYTM: PathBuf = DATA.join("tytm");
+        pub(crate) static ref TYTM_CACHE: PathBuf = dirs::cache_dir().expect("Failed to find user's cache directory").join("tytm");
         pub(crate) static ref TYTM_MANIFEST: PathBuf = TYTM.join("manifest");
     }
 
+    #[cfg(debug_assertions)]
+    pub(crate) fn init() {
+        fs::create_dir("debug-dirs").unwrap_or(());
+        fs::create_dir(TYPORA_THEME.as_path()).unwrap_or(());
+        fs::create_dir(TYPORA_MANIFEST.as_path()).unwrap_or(());
+        fs::create_dir(TYTM_CACHE.as_path()).unwrap_or(());
+    }
+
+    #[cfg(not(debug_assertions))]
     pub(crate) fn init() {
         assert!(
             TYPORA.exists() && TYPORA.is_dir(),
@@ -37,6 +62,11 @@ pub(crate) mod dirs {
             fs::create_dir(&*TYTM).expect("Failed to create TyTM directory");
         }
         assert!(TYTM.is_dir());
+
+        if !TYTM_CACHE.exists() {
+            fs::create_dir(&*TYTM_CACHE).expect("Failed to create TyTM cache directory");
+        }
+        assert!(TYTM_CACHE.is_dir());
 
         if !TYTM_MANIFEST.exists() {
             fs::create_dir(&*TYTM_MANIFEST).expect("Failed to create TyTM manifest directory");

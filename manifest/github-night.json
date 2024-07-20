@@ -14,5 +14,28 @@
                 "README.md"
             ]
         }
-    }
+    },
+    "assets": [
+        "github-night"
+    ],
+    "pkgs": [
+        {
+            "id": "github-night",
+            "name": "GitHub Night",
+            "file": "github-night.css"
+        },
+        {
+            "id": "dimmed",
+            "name": "GitHub Night Dimmed",
+            "file": "github-night-dimmed.css"
+        },
+        {
+            "id": "high-contrast",
+            "name": "GitHub Night High Contrast",
+            "file": "github-night-high-contrast.css"
+        }
+    ],
+    "default": [
+        "github-night"
+    ]
 }

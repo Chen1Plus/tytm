@@ -11,5 +11,24 @@
                 "License"
             ]
         }
-    }
+    },
+    "assets": [
+        "lapis"
+    ],
+    "pkgs": [
+        {
+            "id": "lapis",
+            "name": "Lapis",
+            "file": "lapis.css"
+        },
+        {
+            "id": "lapis-dark",
+            "name": "Lapis Dark",
+            "file": "lapis-dark.css"
+        }
+    ],
+    "default": [
+        "lapis",
+        "lapis-dark"
+    ]
 }
