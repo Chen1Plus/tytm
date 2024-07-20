@@ -1,7 +1,6 @@
 use std::fs;
 
 use clap::{Parser, Subcommand};
-use serde_json as json;
 use walkdir::WalkDir;
 
 mod fsx;
