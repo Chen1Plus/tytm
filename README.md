@@ -11,16 +11,18 @@ Current features:
 ```bash
 ./tytm.exe update
 ./tytm.exe add <THEME_ID>
+./tytm.exe add <THEME_ID> --sub <SUB_THEME_ID>
 ```
 <THEME_ID> will be theme's name but use lowercase and use dash to replace whitespace. Ex: "GitHub Night" has id "github-night"
 ```bash
 ./tytm.exe rm <THEME_ID>
+./tytm.exe rm <THEME_ID> --sub <SUB_THEME_ID>
 ```
 
 ## Contribute: 
 
 ### Add Package Manifest
-
+Refer to `manifest/`. Readme may be outdated.
 An example manifest (OneDark). The file name is same as the id.
 ```json
 {
@@ -34,7 +36,9 @@ An example manifest (OneDark). The file name is same as the id.
             "content": "./",
             "excludes": []
         }
-    }
+    },
+    "assets": [ ... ],
+    "pkgs": [ ... ]
 }
 ```
 "id" will be theme's name but use lowercase and use dash to replace whitespace. Ex: "GitHub Night" has id "github-night"  
