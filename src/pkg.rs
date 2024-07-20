@@ -178,6 +178,7 @@ impl InstalledPackage {
         for path in self.pkgs.iter().map(|p| &p.file) {
             fs::remove_file(path)?;
         }
+        self.pkgs.clear();
         self.clear_assets()
     }
 
