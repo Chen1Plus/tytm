@@ -1,5 +1,6 @@
 use std::{
     fs::{self, File},
+    io,
     path::{self, Path, PathBuf},
 };
 
@@ -147,47 +148,6 @@ pub(crate) struct InstalledPackage {
     pkgs: Vec<InstalledSubPackage>,
 }
 
-impl InstalledPackage {
-    pub(crate) fn get(id: String) -> Result<Self> {
-        json::from_reader(File::open(dirs::TYPORA_MANIFEST.join(id + ".json"))?).map_err(Into::into)
-    }
-
-    pub(crate) fn uninstall<S: AsRef<str>>(&mut self, id: &[S]) -> Result<()> {
-        for pkg in self.pkgs.iter().filter(|pkg| {
-            id.iter()
-                .map(|s| s.as_ref())
-                .collect::<Vec<_>>()
-                .contains(&pkg.id.as_str())
-        }) {
-            pkg.uninstall()?;
-        }
-
-        self.pkgs.retain(|pkg| {
-            !id.iter()
-                .map(|s| s.as_ref())
-                .collect::<Vec<_>>()
-                .contains(&pkg.id.as_str())
-        });
-
-        if self.pkgs.is_empty() {
-            for asset in &self.assets {
-                fs::remove_file(asset)?;
-            }
-        }
-        Ok(())
-    }
-
-    pub(crate) fn uninstall_all(&self) -> Result<()> {
-        for pkg in self.pkgs.iter() {
-            pkg.uninstall()?;
-        }
-        for asset in &self.assets {
-            fs::remove_file(asset)?;
-        }
-        Ok(())
-    }
-}
-
 #[derive(Serialize, Deserialize)]
 struct InstalledSubPackage {
     id: String,
@@ -195,8 +155,56 @@ struct InstalledSubPackage {
     file: PathBuf,
 }
 
-impl InstalledSubPackage {
-    fn uninstall(&self) -> Result<()> {
-        fs::remove_file(&self.file).map_err(Into::into)
+impl InstalledPackage {
+    pub(crate) fn get(id: String) -> Result<Self> {
+        json::from_reader(File::open(dirs::TYPORA_MANIFEST.join(id + ".json"))?).map_err(Into::into)
+    }
+
+    pub(crate) fn save(&mut self) -> Result<()> {
+        let path = dirs::TYPORA_MANIFEST.join(self.id.clone() + ".json");
+        if path.exists() {
+            fs::remove_file(&path)?;
+        }
+
+        if self.pkgs.is_empty() {
+            self.clear_assets()?;
+        } else {
+            json::to_writer(File::create(&path)?, self)?;
+        }
+        Ok(())
+    }
+
+    pub(crate) fn remove(&mut self) -> io::Result<()> {
+        for path in self.pkgs.iter().map(|p| &p.file) {
+            fs::remove_file(path)?;
+        }
+        self.clear_assets()
+    }
+
+    // panic if the sub theme not installed
+    pub(crate) fn remove_sub(&mut self, id: &str) -> io::Result<()> {
+        fs::remove_file(
+            &self
+                .pkgs
+                .iter()
+                .find(|pkg| pkg.id == id)
+                .expect("Sub theme not installed")
+                .file,
+        )?;
+        self.pkgs.retain(|pkg| pkg.id != id);
+
+        if self.pkgs.is_empty() {
+            self.clear_assets()?;
+        }
+        Ok(())
+    }
+
+    fn clear_assets(&mut self) -> io::Result<()> {
+        debug_assert!(self.pkgs.is_empty());
+        for path in self.assets.iter() {
+            fs::remove_file(path)?;
+        }
+        self.assets.clear();
+        Ok(())
     }
 }
