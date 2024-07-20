@@ -51,8 +51,7 @@ fn main() {
         Commands::Add { theme, sub } => {
             let pkg = Package::get(theme).expect("Theme not found");
             if let Some(id) = sub {
-                pkg.install(&id.iter().map(|s| s.as_str()).collect::<Vec<_>>())
-                    .unwrap();
+                pkg.install(&id).unwrap();
             } else {
                 pkg.install_default().unwrap();
             }

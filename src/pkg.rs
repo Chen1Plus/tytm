@@ -41,7 +41,7 @@ impl Package {
         json::from_reader(File::open(dirs::TYTM_MANIFEST.join(id + ".json"))?).map_err(Into::into)
     }
 
-    pub(crate) fn install(self, id: &[&str]) -> Result<()> {
+    pub(crate) fn install<S: AsRef<str>>(self, id: &[S]) -> Result<()> {
         let tmp_dir = fsx::TempDir::new()?;
         self.source.save_to(tmp_dir.path())?;
 
@@ -77,7 +77,12 @@ impl Package {
         for pkg in self
             .pkgs
             .iter()
-            .filter(|pkg| id.contains(&pkg.id.as_str()))
+            .filter(|pkg| {
+                id.iter()
+                    .map(|s| s.as_ref())
+                    .collect::<Vec<_>>()
+                    .contains(&pkg.id.as_str())
+            })
             .map(|pkg| pkg.install(&tmp_dir))
         {
             installed_subs.push(pkg?);
@@ -98,7 +103,7 @@ impl Package {
 
     pub(crate) fn install_default(self) -> Result<()> {
         let id = self.default.clone();
-        self.install(&id.iter().map(|s| s.as_str()).collect::<Vec<_>>())
+        self.install(&id)
     }
 }
 
