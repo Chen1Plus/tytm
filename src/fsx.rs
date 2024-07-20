@@ -36,10 +36,12 @@ pub(crate) mod dirs {
 
     #[cfg(debug_assertions)]
     pub(crate) fn init() {
-        fs::create_dir("debug-dirs").unwrap_or(());
-        fs::create_dir(TYPORA_THEME.as_path()).unwrap_or(());
-        fs::create_dir(TYPORA_MANIFEST.as_path()).unwrap_or(());
-        fs::create_dir(TYTM_CACHE.as_path()).unwrap_or(());
+        use super::ensure_dir;
+
+        ensure_dir("debug-dirs").unwrap();
+        ensure_dir(TYPORA_THEME.as_path()).unwrap();
+        ensure_dir(TYPORA_MANIFEST.as_path()).unwrap();
+        ensure_dir(TYTM_CACHE.as_path()).unwrap();
     }
 
     #[cfg(not(debug_assertions))]
@@ -94,13 +96,27 @@ where
         let dst_path = dst.as_ref().join(item.file_name());
 
         if ty.is_dir() {
-            if !dst_path.exists() {
-                fs::create_dir(&dst_path)?;
-            }
+            ensure_dir(&dst_path)?;
             move_dir(path, &dst_path)?;
         } else if ty.is_file() {
             fs::rename(path, &dst_path)?;
         }
+    }
+    Ok(())
+}
+
+/// Ensure that a directory exists, failed if missing parent directories.
+fn ensure_dir<P: AsRef<Path>>(path: P) -> io::Result<()> {
+    if !path.as_ref().exists() {
+        fs::create_dir(path)?;
+    }
+    Ok(())
+}
+
+/// Ensure that a directory exists, create parent directories if missing.
+fn ensure_dir_all<P: AsRef<Path>>(path: P) -> io::Result<()> {
+    if !path.as_ref().exists() {
+        fs::create_dir_all(path)?;
     }
     Ok(())
 }
