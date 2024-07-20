@@ -1,5 +1,6 @@
 use std::{
     fs::{self, File},
+    io,
     path::{self, Path, PathBuf},
 };
 
@@ -45,6 +46,7 @@ impl Package {
         let tmp_dir = fsx::TempDir::new()?;
         self.source.save_to(tmp_dir.path())?;
 
+        println!("Installing...");
         let mut paths = Vec::new();
         for asset in self.assets.iter().map(|p| tmp_dir.path().join(p)) {
             let dst = dirs::TYPORA_THEME.join(asset.file_name().unwrap());
@@ -63,10 +65,8 @@ impl Package {
                             )
                         }),
                 );
-                if !dst.exists() {
-                    fs::create_dir(&dst)?;
-                }
-                fsx::move_dir(asset, dst)?;
+                fsx::ensure_dir(&dst)?;
+                fsx::move_dir(asset, &dst)?;
             } else if asset.is_file() {
                 fs::rename(asset, &dst)?;
                 paths.push(dst);
@@ -87,18 +87,16 @@ impl Package {
         {
             installed_subs.push(pkg?);
         }
+        println!("Installed.");
 
-        json::to_writer(
-            File::create(dirs::TYPORA_MANIFEST.join(self.id.clone() + ".json"))?,
-            &(InstalledPackage {
-                id: self.id.clone(),
-                name: self.name.clone(),
-                version: self.version.clone(),
-                assets: paths,
-                pkgs: installed_subs,
-            }),
-        )
-        .map_err(Into::into)
+        InstalledPackage {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            version: self.version.clone(),
+            assets: paths,
+            pkgs: installed_subs,
+        }
+        .save()
     }
 
     pub(crate) fn install_default(self) -> Result<()> {
@@ -120,12 +118,12 @@ struct SubPackage {
 }
 
 impl SubPackage {
-    fn validate<P: AsRef<Path>>(&self, from: P) {
-        let file = from.as_ref().join(&self.file);
-        assert!(file.exists());
-        assert!(file.is_file());
-        assert!(file.ends_with(".css"));
-    }
+    // fn validate<P: AsRef<Path>>(&self, from: P) {
+    //     let file = from.as_ref().join(&self.file);
+    //     assert!(file.exists());
+    //     assert!(file.is_file());
+    //     assert!(file.ends_with(".css"));
+    // }
 
     fn install<P: AsRef<Path>>(&self, from: P) -> Result<InstalledSubPackage> {
         let file = path::absolute(dirs::TYPORA_THEME.join(&self.file))?;
@@ -147,47 +145,6 @@ pub(crate) struct InstalledPackage {
     pkgs: Vec<InstalledSubPackage>,
 }
 
-impl InstalledPackage {
-    pub(crate) fn get(id: String) -> Result<Self> {
-        json::from_reader(File::open(dirs::TYPORA_MANIFEST.join(id + ".json"))?).map_err(Into::into)
-    }
-
-    pub(crate) fn uninstall<S: AsRef<str>>(&mut self, id: &[S]) -> Result<()> {
-        for pkg in self.pkgs.iter().filter(|pkg| {
-            id.iter()
-                .map(|s| s.as_ref())
-                .collect::<Vec<_>>()
-                .contains(&pkg.id.as_str())
-        }) {
-            pkg.uninstall()?;
-        }
-
-        self.pkgs.retain(|pkg| {
-            !id.iter()
-                .map(|s| s.as_ref())
-                .collect::<Vec<_>>()
-                .contains(&pkg.id.as_str())
-        });
-
-        if self.pkgs.is_empty() {
-            for asset in &self.assets {
-                fs::remove_file(asset)?;
-            }
-        }
-        Ok(())
-    }
-
-    pub(crate) fn uninstall_all(&self) -> Result<()> {
-        for pkg in self.pkgs.iter() {
-            pkg.uninstall()?;
-        }
-        for asset in &self.assets {
-            fs::remove_file(asset)?;
-        }
-        Ok(())
-    }
-}
-
 #[derive(Serialize, Deserialize)]
 struct InstalledSubPackage {
     id: String,
@@ -195,8 +152,57 @@ struct InstalledSubPackage {
     file: PathBuf,
 }
 
-impl InstalledSubPackage {
-    fn uninstall(&self) -> Result<()> {
-        fs::remove_file(&self.file).map_err(Into::into)
+impl InstalledPackage {
+    pub(crate) fn get(id: String) -> Result<Self> {
+        json::from_reader(File::open(dirs::TYPORA_MANIFEST.join(id + ".json"))?).map_err(Into::into)
+    }
+
+    pub(crate) fn save(&mut self) -> Result<()> {
+        let path = dirs::TYPORA_MANIFEST.join(self.id.clone() + ".json");
+        if path.exists() {
+            fs::remove_file(&path)?;
+        }
+
+        if self.pkgs.is_empty() {
+            self.clear_assets()?;
+        } else {
+            json::to_writer(File::create(&path)?, self)?;
+        }
+        Ok(())
+    }
+
+    pub(crate) fn remove(&mut self) -> io::Result<()> {
+        for path in self.pkgs.iter().map(|p| &p.file) {
+            fs::remove_file(path)?;
+        }
+        self.pkgs.clear();
+        self.clear_assets()
+    }
+
+    // panic if the sub theme not installed
+    pub(crate) fn remove_sub(&mut self, id: &str) -> io::Result<()> {
+        fs::remove_file(
+            &self
+                .pkgs
+                .iter()
+                .find(|pkg| pkg.id == id)
+                .expect("Sub theme not installed")
+                .file,
+        )?;
+        self.pkgs.retain(|pkg| pkg.id != id);
+
+        if self.pkgs.is_empty() {
+            self.clear_assets()?;
+        }
+        Ok(())
+    }
+
+    fn clear_assets(&mut self) -> io::Result<()> {
+        debug_assert!(self.pkgs.is_empty());
+        for path in self.assets.iter() {
+            fs::remove_file(path)?;
+        }
+        self.assets.clear();
+        Ok(())
     }
 }

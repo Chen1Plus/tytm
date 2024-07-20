@@ -28,16 +28,22 @@ enum Commands {
 
     /// Add a new theme
     Add {
+        /// The theme to add
         theme: String,
-        #[arg(long)]
+
+        /// The sub-packages to add
+        #[arg(short, long)]
         sub: Option<Vec<String>>,
     },
 
     /// Remove a theme
     #[command(alias = "rm")]
     Remove {
+        /// The theme to remove
         theme: String,
-        #[arg(long)]
+
+        /// The sub-packages to remove
+        #[arg(short, long)]
         sub: Option<Vec<String>>,
     },
 
@@ -67,15 +73,12 @@ fn main() {
         Commands::Remove { theme, sub } => {
             let mut pkg = InstalledPackage::get(theme.clone()).expect("Theme not installed");
             if let Some(id) = sub {
-                pkg.uninstall(&id).unwrap();
-                fs::remove_file(fsx::dirs::TYPORA_MANIFEST.join(theme.clone() + ".json")).unwrap();
-                json::to_writer(
-                    fs::File::create(fsx::dirs::TYPORA_MANIFEST.join(theme + ".json")).unwrap(),
-                    &pkg,
-                )
-                .unwrap();
+                for id in &id {
+                    pkg.remove_sub(id).unwrap();
+                }
+                pkg.save().unwrap();
             } else {
-                pkg.uninstall_all().unwrap();
+                pkg.remove().unwrap();
                 fs::remove_file(fsx::dirs::TYPORA_MANIFEST.join(theme + ".json")).unwrap();
             }
         }
