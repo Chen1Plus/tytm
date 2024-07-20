@@ -19,6 +19,10 @@ Current features:
 ./tytm.exe rm <THEME_ID> --sub <SUB_THEME_ID>
 ```
 
+## Build
+1. install rust (https://www.rust-lang.org/tools/install)
+2. `cargo build --release`
+
 ## Contribute: 
 
 ### Add Package Manifest
