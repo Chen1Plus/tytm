@@ -64,10 +64,8 @@ impl Package {
                             )
                         }),
                 );
-                if !dst.exists() {
-                    fs::create_dir(&dst)?;
-                }
-                fsx::move_dir(asset, dst)?;
+                fsx::ensure_dir(&dst)?;
+                fsx::move_dir(asset, &dst)?;
             } else if asset.is_file() {
                 fs::rename(asset, &dst)?;
                 paths.push(dst);

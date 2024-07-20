@@ -98,7 +98,7 @@ where
 }
 
 /// Ensure that a directory exists, failed if missing parent directories.
-fn ensure_dir<P: AsRef<Path>>(path: P) -> io::Result<()> {
+pub(crate) fn ensure_dir<P: AsRef<Path>>(path: P) -> io::Result<()> {
     if !path.as_ref().exists() {
         fs::create_dir(path)?;
     }
