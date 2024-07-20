@@ -110,8 +110,6 @@ impl Package {
 #[typetag::serde(tag = "type", content = "value")]
 trait Source {
     fn save_to(&self, path: &Path) -> Result<()>;
-
-    fn install(&self) -> Result<Vec<PathBuf>>;
 }
 
 #[derive(Serialize, Deserialize)]
