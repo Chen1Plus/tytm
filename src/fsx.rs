@@ -3,10 +3,10 @@ use std::{fs, io, path::Path};
 pub(crate) use tempfile::tempfile;
 pub(crate) use tempfile::TempDir;
 
+#[cfg(debug_assertions)]
 pub(crate) mod dirs {
     use std::path::PathBuf;
 
-    #[cfg(debug_assertions)]
     lazy_static::lazy_static! {
         /// The user's data directory.
         static ref DATA: PathBuf = dirs::data_dir().expect("Failed to find user's data directory");
@@ -19,7 +19,21 @@ pub(crate) mod dirs {
         pub(crate) static ref TYTM_MANIFEST: PathBuf = PathBuf::from("manifest");
     }
 
-    #[cfg(not(debug_assertions))]
+    pub(crate) fn init() {
+        use super::ensure_dir;
+
+        ensure_dir("debug-dirs").unwrap();
+        ensure_dir(TYPORA_THEME.as_path()).unwrap();
+        ensure_dir(TYPORA_MANIFEST.as_path()).unwrap();
+    }
+}
+
+#[cfg(not(debug_assertions))]
+pub(crate) mod dirs {
+    use std::path::PathBuf;
+
+    use super::ensure_dir;
+
     lazy_static::lazy_static! {
         /// The user's data directory.
         static ref DATA: PathBuf = dirs::data_dir().expect("Failed to find user's data directory");
@@ -32,16 +46,6 @@ pub(crate) mod dirs {
         pub(crate) static ref TYTM_MANIFEST: PathBuf = TYTM.join("manifest");
     }
 
-    #[cfg(debug_assertions)]
-    pub(crate) fn init() {
-        use super::ensure_dir;
-
-        ensure_dir("debug-dirs").unwrap();
-        ensure_dir(TYPORA_THEME.as_path()).unwrap();
-        ensure_dir(TYPORA_MANIFEST.as_path()).unwrap();
-    }
-
-    #[cfg(not(debug_assertions))]
     pub(crate) fn init() {
         assert!(
             TYPORA.exists() && TYPORA.is_dir(),
@@ -52,19 +56,13 @@ pub(crate) mod dirs {
             "Typora themes directory not found"
         );
 
-        if !TYPORA_MANIFEST.exists() {
-            fs::create_dir(&*TYPORA_MANIFEST).expect("Failed to create Typora manifest directory");
-        }
+        ensure_dir(TYPORA_MANIFEST.as_path()).expect("Failed to create Typora manifest directory");
         assert!(TYPORA_MANIFEST.is_dir());
 
-        if !TYTM.exists() {
-            fs::create_dir(&*TYTM).expect("Failed to create TyTM directory");
-        }
+        ensure_dir(TYTM.as_path()).expect("Failed to create TyTM directory");
         assert!(TYTM.is_dir());
 
-        if !TYTM_MANIFEST.exists() {
-            fs::create_dir(&*TYTM_MANIFEST).expect("Failed to create TyTM manifest directory");
-        }
+        ensure_dir(TYTM_MANIFEST.as_path()).expect("Failed to create TyTM manifest directory");
         assert!(TYTM_MANIFEST.is_dir());
     }
 }
