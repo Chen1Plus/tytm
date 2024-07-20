@@ -1,10 +1,13 @@
+use std::fs;
+
 use clap::{Parser, Subcommand};
+use serde_json as json;
+use walkdir::WalkDir;
 
 mod fsx;
 mod pkg;
 
 use pkg::{InstalledPackage, Package};
-use walkdir::WalkDir;
 
 #[derive(Parser)]
 #[command(
@@ -32,7 +35,11 @@ enum Commands {
 
     /// Remove a theme
     #[command(alias = "rm")]
-    Remove { theme: String },
+    Remove {
+        theme: String,
+        #[arg(long)]
+        sub: Option<Vec<String>>,
+    },
 
     /// List all installed themes
     #[command(alias = "ls")]
@@ -57,11 +64,20 @@ fn main() {
             }
         }
 
-        Commands::Remove { theme } => {
-            // InstalledPackage::get(theme)
-            //     .expect("Theme not installed")
-            //     .uninstall()
-            //     .unwrap();
+        Commands::Remove { theme, sub } => {
+            let mut pkg = InstalledPackage::get(theme.clone()).expect("Theme not installed");
+            if let Some(id) = sub {
+                pkg.uninstall(&id).unwrap();
+                fs::remove_file(fsx::dirs::TYPORA_MANIFEST.join(theme.clone() + ".json")).unwrap();
+                json::to_writer(
+                    fs::File::create(fsx::dirs::TYPORA_MANIFEST.join(theme + ".json")).unwrap(),
+                    &pkg,
+                )
+                .unwrap();
+            } else {
+                pkg.uninstall_all().unwrap();
+                fs::remove_file(fsx::dirs::TYPORA_MANIFEST.join(theme + ".json")).unwrap();
+            }
         }
 
         Commands::List => {

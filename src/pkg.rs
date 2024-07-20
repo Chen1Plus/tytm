@@ -149,24 +149,56 @@ pub(crate) struct InstalledPackage {
     pkgs: Vec<InstalledSubPackage>,
 }
 
-#[derive(Serialize, Deserialize)]
-pub(crate) struct InstalledSubPackage {
-    id: String,
-    name: String,
-    file: PathBuf,
-}
-
 impl InstalledPackage {
     pub(crate) fn get(id: String) -> Result<Self> {
         json::from_reader(File::open(dirs::TYPORA_MANIFEST.join(id + ".json"))?).map_err(Into::into)
     }
 
-    // pub(crate) fn uninstall(&self) -> Result<()> {
-    //     for file in &self.added_files {
-    //         debug_assert!(file.exists() && file.is_file());
-    //         fs::remove_file(file)?;
-    //     }
-    //     fs::remove_file(dirs::TYPORA_MANIFEST.join(self.id.clone() + ".json"))?;
-    //     Ok(())
-    // }
+    pub(crate) fn uninstall<S: AsRef<str>>(&mut self, id: &[S]) -> Result<()> {
+        for pkg in self.pkgs.iter().filter(|pkg| {
+            id.iter()
+                .map(|s| s.as_ref())
+                .collect::<Vec<_>>()
+                .contains(&pkg.id.as_str())
+        }) {
+            pkg.uninstall()?;
+        }
+
+        self.pkgs.retain(|pkg| {
+            !id.iter()
+                .map(|s| s.as_ref())
+                .collect::<Vec<_>>()
+                .contains(&pkg.id.as_str())
+        });
+
+        if self.pkgs.is_empty() {
+            for asset in &self.assets {
+                fs::remove_file(asset)?;
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn uninstall_all(&self) -> Result<()> {
+        for pkg in self.pkgs.iter() {
+            pkg.uninstall()?;
+        }
+        for asset in &self.assets {
+            fs::remove_file(asset)?;
+        }
+        Ok(())
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+struct InstalledSubPackage {
+    id: String,
+    name: String,
+    file: PathBuf,
+}
+
+impl InstalledSubPackage {
+    fn uninstall(&self) -> Result<()> {
+        fs::remove_file(&self.file).map_err(Into::into)
+    }
 }
