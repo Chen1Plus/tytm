@@ -9,5 +9,18 @@
             "content": "latest",
             "excludes": []
         }
-    }
+    },
+    "assets": [
+        "chocolatebox"
+    ],
+    "pkgs": [
+        {
+            "id": "chocolate-box",
+            "name": "Chocolate Box",
+            "file": "chocolate-box.css"
+        }
+    ],
+    "default": [
+        "chocolate-box"
+    ]
 }

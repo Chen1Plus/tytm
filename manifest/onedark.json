@@ -9,5 +9,18 @@
             "content": "./",
             "excludes": []
         }
-    }
+    },
+    "assets": [
+        "onedark"
+    ],
+    "pkgs": [
+        {
+            "id": "onedark",
+            "name": "OneDark",
+            "file": "onedark.css"
+        }
+    ],
+    "default": [
+        "onedark"
+    ]
 }

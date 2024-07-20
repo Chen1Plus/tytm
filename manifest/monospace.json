@@ -12,5 +12,24 @@
                 "README.md"
             ]
         }
-    }
+    },
+    "assets": [
+        "monospace"
+    ],
+    "pkgs": [
+        {
+            "id": "monospace",
+            "name": "Monospace",
+            "file": "monospace.css"
+        },
+        {
+            "id": "monospace-dark",
+            "name": "Monospace Dark",
+            "file": "monospace-dark.css"
+        }
+    ],
+    "default": [
+        "monospace",
+        "monospace-dark"
+    ]
 }
