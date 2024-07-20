@@ -28,16 +28,22 @@ enum Commands {
 
     /// Add a new theme
     Add {
+        /// The theme to add
         theme: String,
-        #[arg(long)]
+
+        /// The sub-packages to add
+        #[arg(short, long)]
         sub: Option<Vec<String>>,
     },
 
     /// Remove a theme
     #[command(alias = "rm")]
     Remove {
+        /// The theme to remove
         theme: String,
-        #[arg(long)]
+
+        /// The sub-packages to remove
+        #[arg(short, long)]
         sub: Option<Vec<String>>,
     },
 

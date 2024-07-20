@@ -46,6 +46,7 @@ impl Package {
         let tmp_dir = fsx::TempDir::new()?;
         self.source.save_to(tmp_dir.path())?;
 
+        println!("Installing...");
         let mut paths = Vec::new();
         for asset in self.assets.iter().map(|p| tmp_dir.path().join(p)) {
             let dst = dirs::TYPORA_THEME.join(asset.file_name().unwrap());
@@ -86,6 +87,7 @@ impl Package {
         {
             installed_subs.push(pkg?);
         }
+        println!("Installed.");
 
         InstalledPackage {
             id: self.id.clone(),
