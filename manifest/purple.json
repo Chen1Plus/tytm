@@ -3,10 +3,10 @@
     "name": "Purple",
     "version": "1.5.7",
     "source": {
-        "type": "Zip",
+        "type": "Git",
         "value": {
-            "url": "https://github.com/hliu202/typora-purple-theme/archive/refs/tags/v1.5.7.zip",
-            "content": "typora-purple-theme-1.5.7",
+            "url": "https://github.com/hliu202/typora-purple-theme/tree/v1.5.7",
+            "content": "./",
             "excludes": [
                 "ScreenShots",
                 "LICENSE",

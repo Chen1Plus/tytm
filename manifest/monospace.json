@@ -1,11 +1,11 @@
 {
     "id": "monospace",
     "name": "Monospace",
-    "version": "Unknown",
+    "version": "Latest",
     "source": {
-        "type": "Zip",
+        "type": "Git",
         "value": {
-            "url": "https://github.com/typora/typora-monospace-theme/archive/master.zip",
+            "url": "https://github.com/typora/typora-monospace-theme",
             "content": "typora-monospace-theme-master",
             "excludes": [
                 "LICENSE",
