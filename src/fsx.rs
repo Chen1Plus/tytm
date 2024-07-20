@@ -36,10 +36,10 @@ pub(crate) mod dirs {
 
     #[cfg(debug_assertions)]
     pub(crate) fn init() {
-        fs::create_dir("debug-dirs").unwrap();
-        fs::create_dir(TYPORA_THEME.as_path()).unwrap();
-        fs::create_dir(TYPORA_MANIFEST.as_path()).unwrap();
-        fs::create_dir(TYTM_CACHE.as_path()).unwrap();
+        fs::create_dir("debug-dirs").unwrap_or(());
+        fs::create_dir(TYPORA_THEME.as_path()).unwrap_or(());
+        fs::create_dir(TYPORA_MANIFEST.as_path()).unwrap_or(());
+        fs::create_dir(TYTM_CACHE.as_path()).unwrap_or(());
     }
 
     #[cfg(not(debug_assertions))]
