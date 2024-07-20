@@ -22,7 +22,7 @@ Current features:
 ## Contribute: 
 
 ### Add Package Manifest
-Refer to `manifest/`. Readme may be outdated.
+Refer to `manifest/`. Readme may be outdated.  
 An example manifest (OneDark). The file name is same as the id.
 ```json
 {
