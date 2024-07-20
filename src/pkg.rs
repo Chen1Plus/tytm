@@ -87,17 +87,14 @@ impl Package {
             installed_subs.push(pkg?);
         }
 
-        json::to_writer(
-            File::create(dirs::TYPORA_MANIFEST.join(self.id.clone() + ".json"))?,
-            &(InstalledPackage {
-                id: self.id.clone(),
-                name: self.name.clone(),
-                version: self.version.clone(),
-                assets: paths,
-                pkgs: installed_subs,
-            }),
-        )
-        .map_err(Into::into)
+        InstalledPackage {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            version: self.version.clone(),
+            assets: paths,
+            pkgs: installed_subs,
+        }
+        .save()
     }
 
     pub(crate) fn install_default(self) -> Result<()> {
