@@ -1,13 +1,10 @@
-use std::{
-    fs,
-    path::{self, Path, PathBuf},
-};
+use std::fs;
+use std::path::{Path, PathBuf};
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use walkdir::WalkDir;
 
-use crate::fsx::{self, dirs};
+use crate::fsx;
 
 use super::Source;
 

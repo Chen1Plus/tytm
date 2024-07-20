@@ -1,15 +1,12 @@
-use std::{
-    fs,
-    path::{self, Path, PathBuf},
-};
+use std::fs;
+use std::path::{Path, PathBuf};
 
 use anyhow::Result;
 use reqwest::blocking;
 use serde::{Deserialize, Serialize};
-use walkdir::WalkDir;
 use zip::ZipArchive;
 
-use crate::fsx::{self, dirs};
+use crate::fsx;
 
 use super::Source;
 
