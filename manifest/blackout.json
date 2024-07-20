@@ -1,13 +1,41 @@
 {
-    "id": "onedark",
+    "id": "blackout",
     "name": "Blackout",
     "version": "1.0.7",
     "source": {
         "type": "Zip",
         "value": {
-            "url": "https://github.com/obscurefreeman/typora_theme_blackout/releases/download/V1.0.7/blackout_theme.zip",
+            "url": "https://github.com/obscurefreeman/typora_theme_blackout/releases/download/V1.0.7/blackout_theme_pack.zip",
             "content": "./",
             "excludes": []
         }
-    }
+    },
+    "assets": [
+        "obscurefreeman"
+    ],
+    "pkgs": [
+        {
+            "id": "blackout",
+            "name": "Blackout",
+            "file": "blackout.css"
+        },
+        {
+            "id": "gamer",
+            "name": "Blackout Gamer",
+            "file": "blackout-gamer.css"
+        },
+        {
+            "id": "chernobyl",
+            "name": "Chernobyl",
+            "file": "chernobyl.css"
+        },
+        {
+            "id": "chernobyl-blue",
+            "name": "Chernobyl Blue",
+            "file": "chernobyl-blue.css"
+        }
+    ],
+    "default": [
+        "blackout"
+    ]
 }

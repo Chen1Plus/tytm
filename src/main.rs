@@ -47,15 +47,15 @@ fn main() {
         Commands::Add { theme } => {
             Package::get(theme)
                 .expect("Theme not found")
-                .install()
+                .install_default()
                 .unwrap();
         }
 
         Commands::Remove { theme } => {
-            InstalledPackage::get(theme)
-                .expect("Theme not installed")
-                .uninstall()
-                .unwrap();
+            // InstalledPackage::get(theme)
+            //     .expect("Theme not installed")
+            //     .uninstall()
+            //     .unwrap();
         }
 
         Commands::List => {

@@ -1,6 +1,6 @@
 use std::{
     fs,
-    path::{self, PathBuf},
+    path::{self, Path, PathBuf},
 };
 
 use anyhow::Result;
@@ -52,5 +52,23 @@ impl Source for Git {
         fsx::move_dir(content_dir, dirs::TYPORA_THEME.as_path())?;
         println!("Done");
         Ok(paths)
+    }
+
+    fn save_to(&self, path: &Path) -> Result<()> {
+        let tmp_dir = fsx::TempDir::new()?;
+        let content_dir = tmp_dir.path().join(&self.content);
+
+        println!("Cloning {}", self.url);
+        git2::Repository::clone(&self.url, &tmp_dir)?;
+
+        for path in self.excludes.iter().map(|p| content_dir.join(p)) {
+            if path.is_dir() {
+                fs::remove_dir_all(path)?;
+            } else if path.is_file() {
+                fs::remove_file(path)?;
+            }
+        }
+
+        fsx::move_dir(content_dir, path).map_err(Into::into)
     }
 }
