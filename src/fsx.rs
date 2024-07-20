@@ -4,7 +4,7 @@ pub(crate) use tempfile::tempfile;
 pub(crate) use tempfile::TempDir;
 
 pub(crate) mod dirs {
-    use std::{fs, path::PathBuf};
+    use std::path::PathBuf;
 
     #[cfg(debug_assertions)]
     lazy_static::lazy_static! {
@@ -16,7 +16,6 @@ pub(crate) mod dirs {
         pub(crate) static ref TYPORA_MANIFEST: PathBuf = TYPORA_THEME.join("tytm-pkgs");
 
         static ref TYTM: PathBuf = DATA.join("tytm");
-        pub(crate) static ref TYTM_CACHE: PathBuf = PathBuf::from("debug-dirs").join("tytm-cache");
         pub(crate) static ref TYTM_MANIFEST: PathBuf = PathBuf::from("manifest");
     }
 
@@ -30,7 +29,6 @@ pub(crate) mod dirs {
         pub(crate) static ref TYPORA_MANIFEST: PathBuf = TYPORA_THEME.join("tytm-pkgs");
 
         static ref TYTM: PathBuf = DATA.join("tytm");
-        pub(crate) static ref TYTM_CACHE: PathBuf = dirs::cache_dir().expect("Failed to find user's cache directory").join("tytm");
         pub(crate) static ref TYTM_MANIFEST: PathBuf = TYTM.join("manifest");
     }
 
@@ -41,7 +39,6 @@ pub(crate) mod dirs {
         ensure_dir("debug-dirs").unwrap();
         ensure_dir(TYPORA_THEME.as_path()).unwrap();
         ensure_dir(TYPORA_MANIFEST.as_path()).unwrap();
-        ensure_dir(TYTM_CACHE.as_path()).unwrap();
     }
 
     #[cfg(not(debug_assertions))]
@@ -64,11 +61,6 @@ pub(crate) mod dirs {
             fs::create_dir(&*TYTM).expect("Failed to create TyTM directory");
         }
         assert!(TYTM.is_dir());
-
-        if !TYTM_CACHE.exists() {
-            fs::create_dir(&*TYTM_CACHE).expect("Failed to create TyTM cache directory");
-        }
-        assert!(TYTM_CACHE.is_dir());
 
         if !TYTM_MANIFEST.exists() {
             fs::create_dir(&*TYTM_MANIFEST).expect("Failed to create TyTM manifest directory");
