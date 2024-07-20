@@ -24,7 +24,11 @@ enum Commands {
     Update,
 
     /// Add a new theme
-    Add { theme: String },
+    Add {
+        theme: String,
+        #[arg(long)]
+        sub: Option<Vec<String>>,
+    },
 
     /// Remove a theme
     #[command(alias = "rm")]
@@ -44,11 +48,14 @@ fn main() {
             pkg::update_manifest().unwrap();
         }
 
-        Commands::Add { theme } => {
-            Package::get(theme)
-                .expect("Theme not found")
-                .install_default()
-                .unwrap();
+        Commands::Add { theme, sub } => {
+            let pkg = Package::get(theme).expect("Theme not found");
+            if let Some(id) = sub {
+                pkg.install(&id.iter().map(|s| s.as_str()).collect::<Vec<_>>())
+                    .unwrap();
+            } else {
+                pkg.install_default().unwrap();
+            }
         }
 
         Commands::Remove { theme } => {
