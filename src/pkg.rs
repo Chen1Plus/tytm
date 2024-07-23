@@ -38,8 +38,11 @@ pub(crate) struct Package {
 }
 
 impl Package {
-    pub(crate) fn get(id: String) -> Result<Self> {
-        json::from_reader(File::open(dirs::TYTM_MANIFEST.join(id + ".json"))?).map_err(Into::into)
+    pub(crate) fn get(id: &str) -> Result<Self> {
+        json::from_reader(File::open(
+            dirs::TYTM_MANIFEST.join(id).with_extension("json"),
+        )?)
+        .map_err(Into::into)
     }
 
     pub(crate) fn install<S: AsRef<str>>(self, id: &[S]) -> Result<()> {
@@ -153,12 +156,15 @@ struct InstalledSubPackage {
 }
 
 impl InstalledPackage {
-    pub(crate) fn get(id: String) -> Result<Self> {
-        json::from_reader(File::open(dirs::TYPORA_MANIFEST.join(id + ".json"))?).map_err(Into::into)
+    pub(crate) fn get(id: &str) -> Result<Self> {
+        json::from_reader(File::open(
+            dirs::TYPORA_MANIFEST.join(id).with_extension("json"),
+        )?)
+        .map_err(Into::into)
     }
 
     pub(crate) fn save(&mut self) -> Result<()> {
-        let path = dirs::TYPORA_MANIFEST.join(self.id.clone() + ".json");
+        let path = dirs::TYPORA_MANIFEST.join(&self.id).with_extension("json");
         if path.exists() {
             fs::remove_file(&path)?;
         }
