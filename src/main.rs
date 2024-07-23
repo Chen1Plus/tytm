@@ -61,7 +61,7 @@ fn main() {
         }
 
         Commands::Add { theme, sub } => {
-            let pkg = Package::get(theme).expect("Theme not found");
+            let pkg = Package::get(&theme).expect("Theme not found");
             if let Some(id) = sub {
                 pkg.install(&id).unwrap();
             } else {
@@ -70,7 +70,7 @@ fn main() {
         }
 
         Commands::Remove { theme, sub } => {
-            let mut pkg = InstalledPackage::get(theme.clone()).expect("Theme not installed");
+            let mut pkg = InstalledPackage::get(&theme).expect("Theme not installed");
             if let Some(id) = sub {
                 for id in &id {
                     pkg.remove_sub(id).unwrap();
