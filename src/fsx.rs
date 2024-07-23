@@ -28,7 +28,7 @@ pub(crate) mod dirs {
     }
 }
 
-#[cfg(not(debug_assertions))]
+#[cfg(all(not(debug_assertions), target_os = "windows"))]
 pub(crate) mod dirs {
     use std::path::PathBuf;
 
@@ -67,8 +67,47 @@ pub(crate) mod dirs {
     }
 }
 
-/// Move all files and directories from `src` to `dst`.  
-/// You should ensure that both `src` and `dst` exist and are directories.  
+#[cfg(all(not(debug_assertions), target_os = "macos"))]
+pub(crate) mod dirs {
+    use std::path::PathBuf;
+
+    use super::ensure_dir;
+
+    lazy_static::lazy_static! {
+        /// The user's data directory.
+        static ref DATA: PathBuf = dirs::data_dir().expect("Failed to find user's data directory");
+
+        static ref TYPORA: PathBuf = DATA.join("abnerworks.Typora");
+        pub(crate) static ref TYPORA_THEME: PathBuf = TYPORA.join("themes");
+        pub(crate) static ref TYPORA_MANIFEST: PathBuf = TYPORA_THEME.join("tytm-pkgs");
+
+        static ref TYTM: PathBuf = DATA.join("tytm");
+        pub(crate) static ref TYTM_MANIFEST: PathBuf = TYTM.join("manifest");
+    }
+
+    pub(crate) fn init() {
+        assert!(
+            TYPORA.exists() && TYPORA.is_dir(),
+            "Typora directory not found"
+        );
+        assert!(
+            TYPORA_THEME.exists() && TYPORA_THEME.is_dir(),
+            "Typora themes directory not found"
+        );
+
+        ensure_dir(TYPORA_MANIFEST.as_path()).expect("Failed to create Typora manifest directory");
+        assert!(TYPORA_MANIFEST.is_dir());
+
+        ensure_dir(TYTM.as_path()).expect("Failed to create TyTM directory");
+        assert!(TYTM.is_dir());
+
+        ensure_dir(TYTM_MANIFEST.as_path()).expect("Failed to create TyTM manifest directory");
+        assert!(TYTM_MANIFEST.is_dir());
+    }
+}
+
+/// Move all files and directories from `src` to `dst`.
+/// You should ensure that both `src` and `dst` exist and are directories.
 /// If a file already exists, it will be overwritten.
 pub(crate) fn move_dir<P, Q>(src: P, dst: Q) -> io::Result<()>
 where
