@@ -36,11 +36,11 @@ impl Manifest {
         Ok(())
     }
 
-    pub(crate) fn get(id: &str) -> Result<Self> {
-        json::from_reader(File::open(
+    pub(crate) fn get(id: &str) -> io::Result<Self> {
+        Ok(json::from_reader(File::open(
             dirs::TYTM_MANIFEST.join(id).with_extension("json"),
         )?)
-        .map_err(Into::into)
+        .expect("Invalid manifest."))
     }
 
     pub(crate) fn store_package<P: AsRef<Path>>(&self, path: P) -> Result<Package> {
@@ -162,11 +162,11 @@ struct InstalledSubPackage {
 }
 
 impl InstalledPackage {
-    pub(crate) fn get(id: &str) -> Result<Self> {
-        json::from_reader(File::open(
+    pub(crate) fn get(id: &str) -> io::Result<Self> {
+        Ok(json::from_reader(File::open(
             dirs::TYPORA_MANIFEST.join(id).with_extension("json"),
         )?)
-        .map_err(Into::into)
+        .expect("Invalid manifest."))
     }
 
     pub(crate) fn save(&mut self) -> Result<()> {
