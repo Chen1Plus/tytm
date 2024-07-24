@@ -32,7 +32,7 @@ impl Manifest {
             tmp_dir.path().join("manifest"),
             dirs::TYTM_MANIFEST.as_path(),
         )?;
-        println!("Manifest updated.");
+        println!("Manifests updated.");
         Ok(())
     }
 
