@@ -70,14 +70,9 @@ fn main() {
             let mut installed_pkg =
                 InstalledPackage::get(&theme).unwrap_or_else(|_| pkg.install().unwrap());
 
-            if let Some(id) = sub {
-                for id in &id {
-                    installed_pkg.add_sub(id, &pkg).unwrap();
-                }
-            } else {
-                for id in &pkg.default {
-                    installed_pkg.add_sub(id, &pkg).unwrap();
-                }
+            let sub = &sub.unwrap_or_else(|| pkg.default.clone());
+            for id in sub {
+                installed_pkg.add_sub(id, &pkg).unwrap();
             }
             installed_pkg.save().unwrap();
         }
