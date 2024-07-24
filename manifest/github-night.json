@@ -3,10 +3,10 @@
     "name": "GitHub Night",
     "version": "0.6.2",
     "source": {
-        "type": "Git",
+        "type": "Zip",
         "value": {
-            "url": "https://github.com/kinoute/typora-github-night-theme/tree/v0.6.2",
-            "content": "./",
+            "url": "https://github.com/kinoute/typora-github-night-theme/archive/refs/tags/v0.6.2.zip",
+            "content": "typora-github-night-theme-0.6.2",
             "excludes": [
                 ".github",
                 "images",

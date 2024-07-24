@@ -185,16 +185,15 @@ impl InstalledPackage {
         self.clear_assets()
     }
 
-    // panic if the sub theme not installed
+    // do nothing if the sub theme not installed
     pub(crate) fn remove_sub(&mut self, id: &str) -> io::Result<()> {
-        fs::remove_file(
-            &self
-                .pkgs
-                .iter()
-                .find(|pkg| pkg.id == id)
-                .expect("Sub theme not installed")
-                .file,
-        )?;
+        debug_assert!(self.pkgs.iter().filter(|pkg| pkg.id == id).count() <= 1);
+        let Some(pkg) = self.pkgs.iter().find(|pkg| pkg.id == id) else {
+            println!("Sub theme not installed.");
+            return Ok(());
+        };
+
+        fs::remove_file(&pkg.file)?;
         self.pkgs.retain(|pkg| pkg.id != id);
 
         if self.pkgs.is_empty() {
