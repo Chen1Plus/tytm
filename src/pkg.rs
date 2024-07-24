@@ -57,13 +57,17 @@ impl Manifest {
                 .iter()
                 .map(|p| SubPackage {
                     id: p.id.clone(),
-                    name: p.name.clone(),
                     file: path.join(&p.file),
                 })
                 .collect(),
             default: self.default.clone(),
         })
     }
+}
+
+#[typetag::serde(tag = "type", content = "value")]
+trait Source {
+    fn save_to(&self, path: &Path) -> Result<()>;
 }
 
 pub(crate) struct Package {
@@ -114,15 +118,9 @@ impl Package {
     }
 }
 
-#[typetag::serde(tag = "type", content = "value")]
-trait Source {
-    fn save_to(&self, path: &Path) -> Result<()>;
-}
-
 #[derive(Serialize, Deserialize)]
 struct SubPackage {
     id: String,
-    name: String,
     file: PathBuf,
 }
 
@@ -139,7 +137,6 @@ impl SubPackage {
         fs::rename(&self.file, &file)?;
         Ok(InstalledSubPackage {
             id: self.id.clone(),
-            name: self.name.clone(),
             file,
         })
     }
@@ -157,7 +154,6 @@ pub(crate) struct InstalledPackage {
 #[derive(Serialize, Deserialize)]
 struct InstalledSubPackage {
     id: String,
-    name: String,
     file: PathBuf,
 }
 
