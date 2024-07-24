@@ -66,7 +66,10 @@ fn main() {
                 .expect("Theme not found")
                 .store_package(&tmp_dir)
                 .unwrap();
-            let mut installed_pkg = pkg.install().unwrap();
+
+            let mut installed_pkg =
+                InstalledPackage::get(&theme).unwrap_or_else(|_| pkg.install().unwrap());
+
             if let Some(id) = sub {
                 for id in &id {
                     installed_pkg.add_sub(id, &pkg).unwrap();
