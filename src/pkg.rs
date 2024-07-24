@@ -1,8 +1,6 @@
-use std::{
-    fs::{self, File},
-    io,
-    path::{self, Path, PathBuf},
-};
+use std::fs::{self, File};
+use std::io;
+use std::path::{self, Path, PathBuf};
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -114,11 +112,6 @@ impl Package {
             pkgs: Vec::new(),
         })
     }
-
-    // pub(crate) fn add_sub_to(&self, id: &str, installed_pkg: &mut InstalledPackage) -> Result<()> {
-    //     installed_pkg.add_sub(self);
-    //     Ok(())
-    // }
 }
 
 #[typetag::serde(tag = "type", content = "value")]
