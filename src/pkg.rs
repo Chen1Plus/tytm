@@ -14,20 +14,8 @@ use crate::fsx::{self, dirs};
 mod git;
 mod zip;
 
-pub(crate) fn update_manifest() -> Result<()> {
-    let tmp_dir = fsx::TempDir::new()?;
-    println!("Fetching manifest from GitHub...");
-    git2::Repository::clone("https://github.com/Chen1Plus/tytm", &tmp_dir)?;
-    fsx::move_dir(
-        tmp_dir.path().join("manifest"),
-        dirs::TYTM_MANIFEST.as_path(),
-    )?;
-    println!("Manifest updated.");
-    Ok(())
-}
-
 #[derive(Serialize, Deserialize)]
-pub(crate) struct Package {
+pub(crate) struct Manifest {
     id: String,
     name: String,
     version: String,
@@ -37,7 +25,19 @@ pub(crate) struct Package {
     default: Vec<String>,
 }
 
-impl Package {
+impl Manifest {
+    pub(crate) fn update() -> Result<()> {
+        let tmp_dir = fsx::TempDir::new()?;
+        println!("Fetching manifests...");
+        git2::Repository::clone("https://github.com/Chen1Plus/tytm", &tmp_dir)?;
+        fsx::move_dir(
+            tmp_dir.path().join("manifest"),
+            dirs::TYTM_MANIFEST.as_path(),
+        )?;
+        println!("Manifest updated.");
+        Ok(())
+    }
+
     pub(crate) fn get(id: &str) -> Result<Self> {
         json::from_reader(File::open(
             dirs::TYTM_MANIFEST.join(id).with_extension("json"),
@@ -45,15 +45,45 @@ impl Package {
         .map_err(Into::into)
     }
 
-    pub(crate) fn install<S: AsRef<str>>(self, id: &[S]) -> Result<()> {
-        let tmp_dir = fsx::TempDir::new()?;
-        self.source.save_to(tmp_dir.path())?;
+    pub(crate) fn store_package<P: AsRef<Path>>(&self, path: P) -> Result<Package> {
+        let path = path.as_ref();
+        self.source.save_to(path)?;
 
-        println!("Installing...");
+        Ok(Package {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            version: self.version.clone(),
+            assets: self.assets.iter().map(|p| path.join(p)).collect(),
+            pkgs: self
+                .pkgs
+                .iter()
+                .map(|p| SubPackage {
+                    id: p.id.clone(),
+                    name: p.name.clone(),
+                    file: path.join(&p.file),
+                })
+                .collect(),
+            default: self.default.clone(),
+        })
+    }
+}
+
+pub(crate) struct Package {
+    id: String,
+    name: String,
+    version: String,
+    assets: Vec<PathBuf>,
+    pkgs: Vec<SubPackage>,
+    pub(crate) default: Vec<String>,
+}
+
+impl Package {
+    pub(crate) fn install(&self) -> Result<InstalledPackage> {
         let mut paths = Vec::new();
-        for asset in self.assets.iter().map(|p| tmp_dir.path().join(p)) {
+        for asset in &self.assets {
             let dst = dirs::TYPORA_THEME.join(asset.file_name().unwrap());
             if asset.is_dir() {
+                let parent = asset.parent().unwrap();
                 paths.extend(
                     WalkDir::new(&asset)
                         .into_iter()
@@ -63,7 +93,7 @@ impl Package {
                             dirs::TYPORA_THEME.join(
                                 path::absolute(e.path())
                                     .unwrap()
-                                    .strip_prefix(tmp_dir.path())
+                                    .strip_prefix(parent)
                                     .unwrap(),
                             )
                         }),
@@ -76,36 +106,19 @@ impl Package {
             }
         }
 
-        let mut installed_subs = Vec::new();
-        for pkg in self
-            .pkgs
-            .iter()
-            .filter(|pkg| {
-                id.iter()
-                    .map(|s| s.as_ref())
-                    .collect::<Vec<_>>()
-                    .contains(&pkg.id.as_str())
-            })
-            .map(|pkg| pkg.install(&tmp_dir))
-        {
-            installed_subs.push(pkg?);
-        }
-        println!("Installed.");
-
-        InstalledPackage {
+        Ok(InstalledPackage {
             id: self.id.clone(),
             name: self.name.clone(),
             version: self.version.clone(),
             assets: paths,
-            pkgs: installed_subs,
-        }
-        .save()
+            pkgs: Vec::new(),
+        })
     }
 
-    pub(crate) fn install_default(self) -> Result<()> {
-        let id = self.default.clone();
-        self.install(&id)
-    }
+    // pub(crate) fn add_sub_to(&self, id: &str, installed_pkg: &mut InstalledPackage) -> Result<()> {
+    //     installed_pkg.add_sub(self);
+    //     Ok(())
+    // }
 }
 
 #[typetag::serde(tag = "type", content = "value")]
@@ -128,9 +141,9 @@ impl SubPackage {
     //     assert!(file.ends_with(".css"));
     // }
 
-    fn install<P: AsRef<Path>>(&self, from: P) -> Result<InstalledSubPackage> {
-        let file = path::absolute(dirs::TYPORA_THEME.join(&self.file))?;
-        fs::rename(from.as_ref().join(&self.file), &file)?;
+    fn install(&self) -> Result<InstalledSubPackage> {
+        let file = path::absolute(dirs::TYPORA_THEME.join(&self.file.file_name().unwrap()))?;
+        fs::rename(&self.file, &file)?;
         Ok(InstalledSubPackage {
             id: self.id.clone(),
             name: self.name.clone(),
@@ -185,16 +198,26 @@ impl InstalledPackage {
         self.clear_assets()
     }
 
-    // panic if the sub theme not installed
-    pub(crate) fn remove_sub(&mut self, id: &str) -> io::Result<()> {
-        fs::remove_file(
-            &self
-                .pkgs
+    pub(crate) fn add_sub(&mut self, id: &str, from: &Package) -> Result<()> {
+        self.pkgs.push(
+            from.pkgs
                 .iter()
                 .find(|pkg| pkg.id == id)
-                .expect("Sub theme not installed")
-                .file,
-        )?;
+                .expect("Sub theme not found")
+                .install()?,
+        );
+        Ok(())
+    }
+
+    // do nothing if the sub theme not installed
+    pub(crate) fn remove_sub(&mut self, id: &str) -> io::Result<()> {
+        debug_assert!(self.pkgs.iter().filter(|pkg| pkg.id == id).count() <= 1);
+        let Some(pkg) = self.pkgs.iter().find(|pkg| pkg.id == id) else {
+            println!("Sub theme not installed.");
+            return Ok(());
+        };
+
+        fs::remove_file(&pkg.file)?;
         self.pkgs.retain(|pkg| pkg.id != id);
 
         if self.pkgs.is_empty() {

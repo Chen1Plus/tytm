@@ -6,7 +6,7 @@ use walkdir::WalkDir;
 mod fsx;
 mod pkg;
 
-use pkg::{InstalledPackage, Package};
+use pkg::{InstalledPackage, Manifest};
 
 #[derive(Parser)]
 #[command(
@@ -57,16 +57,26 @@ fn main() {
     let cli = Cli::parse();
     match cli.command {
         Commands::Update => {
-            pkg::update_manifest().unwrap();
+            pkg::Manifest::update().unwrap();
         }
 
         Commands::Add { theme, sub } => {
-            let pkg = Package::get(&theme).expect("Theme not found");
+            let tmp_dir = fsx::TempDir::new().unwrap();
+            let pkg = Manifest::get(&theme)
+                .expect("Theme not found")
+                .store_package(&tmp_dir)
+                .unwrap();
+            let mut installed_pkg = pkg.install().unwrap();
             if let Some(id) = sub {
-                pkg.install(&id).unwrap();
+                for id in &id {
+                    installed_pkg.add_sub(id, &pkg).unwrap();
+                }
             } else {
-                pkg.install_default().unwrap();
+                for id in &pkg.default {
+                    installed_pkg.add_sub(id, &pkg).unwrap();
+                }
             }
+            installed_pkg.save().unwrap();
         }
 
         Commands::Remove { theme, sub } => {
