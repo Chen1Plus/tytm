@@ -90,7 +90,7 @@ fn main() {
                 }
                 pkg.save().unwrap();
             } else {
-                pkg.remove().unwrap();
+                pkg.uninstall().unwrap();
                 fs::remove_file(fsx::dirs::TYPORA_MANIFEST.join(theme + ".json")).unwrap();
             }
         }

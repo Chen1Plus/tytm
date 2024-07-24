@@ -166,20 +166,16 @@ impl InstalledPackage {
     }
 
     pub(crate) fn save(&mut self) -> Result<()> {
+        debug_assert!(!self.pkgs.is_empty(), "Try to save an empty package.");
+
         let path = dirs::TYPORA_MANIFEST.join(&self.id).with_extension("json");
         if path.exists() {
             fs::remove_file(&path)?;
         }
-
-        if self.pkgs.is_empty() {
-            self.clear_assets()?;
-        } else {
-            json::to_writer(File::create(&path)?, self)?;
-        }
-        Ok(())
+        json::to_writer(File::create(&path)?, self).map_err(Into::into)
     }
 
-    pub(crate) fn remove(&mut self) -> io::Result<()> {
+    pub(crate) fn uninstall(&mut self) -> io::Result<()> {
         for path in self.pkgs.iter().map(|p| &p.file) {
             fs::remove_file(path)?;
         }
