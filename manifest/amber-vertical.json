@@ -1,0 +1,16 @@
+{
+  "id": "amber-vertical",
+  "name": "Amber Vertical",
+  "version": "",
+  "source": {
+    "type": "Zip",
+    "value": {
+      "url": "https://github.com/MichaelLaw2003/amber-vertical-typora-theme/archive/refs/heads/main.zip",
+      "content": "amber-vertical-typora-theme-main",
+      "excludes": ["Readme", "LICENSE", "README.md"]
+    }
+  },
+  "assets": ["amber"],
+  "pkgs": [{ "id": "amber", "file": "amber.css" }],
+  "default": []
+}

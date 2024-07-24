@@ -1,0 +1,20 @@
+{
+  "id": "ravel",
+  "name": "Ravel",
+  "version": "0.2",
+  "source": {
+    "type": "Zip",
+    "value": {
+      "url": "https://github.com/isunjn/ravel/archive/refs/tags/v0.2.zip",
+      "content": "ravel-0.2",
+      "excludes": ["LICENSE", "README.md", ".gitignore"]
+    }
+  },
+  "assets": [],
+  "pkgs": [
+    { "id": "dark", "file": "ravel-dark.css" },
+    { "id": "light", "file": "ravel-light.css" },
+    { "id": "ravel", "file": "ravel.css" }
+  ],
+  "default": ["ravel"]
+}

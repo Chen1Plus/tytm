@@ -1,0 +1,19 @@
+{
+  "id": "keepstyle",
+  "name": "Keepstyle",
+  "version": "",
+  "source": {
+    "type": "Zip",
+    "value": {
+      "url": "https://github.com/KSMLC/TyporaThemeKeepStyle/releases/download/KeepStyle/TyporaKeepStyle-24.7.4-2.zip.zip",
+      "content": "./",
+      "excludes": ["README.md"]
+    }
+  },
+  "assets": ["ksmlc"],
+  "pkgs": [
+    { "id": "keepstyle", "file": "keepstyle.css" },
+    { "id": "bright", "file": "keepstyle_bright.css" }
+  ],
+  "default": ["keepstyle"]
+}

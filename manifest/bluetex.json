@@ -1,0 +1,16 @@
+{
+  "id": "bluetex",
+  "name": "blueTex",
+  "version": "",
+  "source": {
+    "type": "Zip",
+    "value": {
+      "url": "https://github.com/DaYangtuo247/typora-blueTex-theme/releases/download/blueTex-1.1/blueTex.1.1.zip",
+      "content": "./",
+      "excludes": []
+    }
+  },
+  "assets": ["blueTex"],
+  "pkgs": [{ "id": "bluetex", "file": "bluetex.css" }],
+  "default": ["bluetex"]
+}
