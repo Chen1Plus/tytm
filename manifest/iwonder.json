@@ -1,0 +1,16 @@
+{
+  "id": "iwonder",
+  "name": "Iwonder",
+  "version": "2.0.0",
+  "source": {
+    "type": "Zip",
+    "value": {
+      "url": "https://github.com/CAureliano/theme.typora.iWonder/releases/download/v2.0.0/theme.typora.iWonder-v2.0.0.zip",
+      "content": "./",
+      "excludes": ["看我看我README.md"]
+    }
+  },
+  "assets": ["iWonder"],
+  "pkgs": [{ "id": "i-w-blue", "file": "i-w-blue.css" }],
+  "default": ["i-w-blue"]
+}

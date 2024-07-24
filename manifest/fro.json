@@ -1,0 +1,16 @@
+{
+  "id": "fro",
+  "name": "Fro",
+  "version": "0.1.0",
+  "source": {
+    "type": "Zip",
+    "value": {
+      "url": "https://github.com/Fro-Q/typora-fro/releases/download/v0.1.0-beta/typora_fro_0.1.0.zip",
+      "content": "./",
+      "excludes": ["README.md"]
+    }
+  },
+  "assets": [],
+  "pkgs": [{ "id": "fro", "file": "fro.css" }],
+  "default": ["fro"]
+}

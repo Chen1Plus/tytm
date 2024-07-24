@@ -1,0 +1,21 @@
+{
+  "id": "novel-tex",
+  "name": "Novel Tex",
+  "version": "1.0",
+  "source": {
+    "type": "Zip",
+    "value": {
+      "url": "https://github.com/soryu-ryouji/novel-tex-theme/archive/refs/tags/v1.0.zip",
+      "content": "novel-tex-theme-1.0",
+      "excludes": ["LICENSE", "README.md"]
+    }
+  },
+  "assets": ["novel-tex"],
+  "pkgs": [
+    { "id": "novel-tex-n-d", "file": "novel-tex-n-d.css" },
+    { "id": "novel-tex-f-l", "file": "novel-tex-f-l.css" },
+    { "id": "novel-tex-f-d", "file": "novel-tex-f-d.css" },
+    { "id": "novel-tex-n-l", "file": "novel-tex-n-l.css" }
+  ],
+  "default": ["novel-tex-n-d", "novel-tex-n-l"]
+}
