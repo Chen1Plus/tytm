@@ -19,32 +19,26 @@
     "pkgs": [
         {
             "id": "purple",
-            "name": "Purple",
             "file": "purple.css"
         },
         {
             "id": "purple-blue",
-            "name": "Purple Blue",
             "file": "purple-blue.css"
         },
         {
             "id": "purple-cesno",
-            "name": "Purple Cesno",
             "file": "purple-cesno.css"
         },
         {
             "id": "purple-classic",
-            "name": "Purple Classic",
             "file": "purple-classic.css"
         },
         {
             "id": "purple-green",
-            "name": "Purple Green",
             "file": "purple-green.css"
         },
         {
             "id": "purple-plain",
-            "name": "Purple Plain",
             "file": "purple-plain.css"
         }
     ],

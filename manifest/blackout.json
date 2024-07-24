@@ -16,22 +16,18 @@
     "pkgs": [
         {
             "id": "blackout",
-            "name": "Blackout",
             "file": "blackout.css"
         },
         {
             "id": "gamer",
-            "name": "Blackout Gamer",
             "file": "blackout-gamer.css"
         },
         {
             "id": "chernobyl",
-            "name": "Chernobyl",
             "file": "chernobyl.css"
         },
         {
             "id": "chernobyl-blue",
-            "name": "Chernobyl Blue",
             "file": "chernobyl-blue.css"
         }
     ],

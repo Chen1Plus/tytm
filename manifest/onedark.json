@@ -16,7 +16,6 @@
     "pkgs": [
         {
             "id": "onedark",
-            "name": "OneDark",
             "file": "onedark.css"
         }
     ],

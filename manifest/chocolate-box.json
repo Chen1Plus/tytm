@@ -16,7 +16,6 @@
     "pkgs": [
         {
             "id": "chocolate-box",
-            "name": "Chocolate Box",
             "file": "chocolate-box.css"
         }
     ],
