@@ -52,14 +52,7 @@ impl Manifest {
             version: self.version.clone(),
             base_path: path.into(),
             assets: self.assets.clone(),
-            pkgs: self
-                .pkgs
-                .iter()
-                .map(|p| SubPackage {
-                    id: p.id.clone(),
-                    file: path.join(&p.file),
-                })
-                .collect(),
+            pkgs: self.pkgs.clone(),
             default: self.default.clone(),
         })
     }
@@ -115,16 +108,16 @@ impl Package {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 struct SubPackage {
     id: String,
-    file: PathBuf,
+    file: RelativePathBuf,
 }
 
 impl SubPackage {
-    fn install(&self) -> Result<InstalledSubPackage> {
+    fn install(&self, from: &Path) -> Result<InstalledSubPackage> {
         let file = path::absolute(dirs::TYPORA_THEME.join(&self.file.file_name().unwrap()))?;
-        fs::rename(&self.file, &file)?;
+        fs::rename(self.file.to_logical_path(from), &file)?;
         Ok(InstalledSubPackage {
             id: self.id.clone(),
             file,
@@ -179,7 +172,7 @@ impl InstalledPackage {
                 .iter()
                 .find(|pkg| pkg.id == id)
                 .expect("Sub theme not found")
-                .install()?,
+                .install(&from.base_path)?,
         );
         Ok(())
     }
