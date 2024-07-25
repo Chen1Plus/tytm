@@ -9,15 +9,14 @@ use walkdir::WalkDir;
 
 use crate::fsx::{self, dirs};
 
-mod git;
-mod zip;
+mod source;
 
 #[derive(Serialize, Deserialize)]
 pub(crate) struct Manifest {
     id: String,
     name: String,
     version: String,
-    source: Box<dyn Source>,
+    source: Box<dyn source::Source>,
     assets: Vec<PathBuf>,
     pkgs: Vec<SubPackage>,
     default: Vec<String>,
@@ -63,11 +62,6 @@ impl Manifest {
             default: self.default.clone(),
         })
     }
-}
-
-#[typetag::serde(tag = "type", content = "value")]
-trait Source {
-    fn save_to(&self, path: &Path) -> Result<()>;
 }
 
 pub(crate) struct Package {
