@@ -43,8 +43,7 @@ impl Manifest {
         .expect("Invalid manifest."))
     }
 
-    pub(crate) fn store_package<P: AsRef<Path>>(&self, path: P) -> Result<Package> {
-        let path = path.as_ref();
+    pub(crate) fn store_package(&self, path: &Path) -> Result<Package> {
         self.source.save_to(path)?;
 
         Ok(Package {

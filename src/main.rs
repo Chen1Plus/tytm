@@ -64,7 +64,7 @@ fn main() {
             let tmp_dir = fsx::TempDir::new().unwrap();
             let pkg = Manifest::get(&theme)
                 .expect("Theme not found")
-                .store_package(&tmp_dir)
+                .store_package(tmp_dir.path())
                 .unwrap();
 
             let mut installed_pkg =
