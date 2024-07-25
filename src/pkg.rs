@@ -3,6 +3,7 @@ use std::io;
 use std::path::{self, Path, PathBuf};
 
 use anyhow::Result;
+use relative_path::RelativePathBuf;
 use serde::{Deserialize, Serialize};
 use serde_json as json;
 use walkdir::WalkDir;
@@ -17,7 +18,7 @@ pub(crate) struct Manifest {
     name: String,
     version: String,
     source: Box<dyn source::Source>,
-    assets: Vec<PathBuf>,
+    assets: Vec<RelativePathBuf>,
     pkgs: Vec<SubPackage>,
     default: Vec<String>,
 }
@@ -50,7 +51,11 @@ impl Manifest {
             id: self.id.clone(),
             name: self.name.clone(),
             version: self.version.clone(),
-            assets: self.assets.iter().map(|p| path.join(p)).collect(),
+            assets: self
+                .assets
+                .iter()
+                .map(|p| p.to_logical_path(path))
+                .collect(),
             pkgs: self
                 .pkgs
                 .iter()

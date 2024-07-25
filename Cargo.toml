@@ -4,15 +4,23 @@ version = "0.2.3"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.86"
-clap = { version = "4.5.9", features = ["derive"] }
-dirs = "5.0.1"
-git2 = "0.19.0"
-lazy_static = "1.5.0"
-reqwest = { version = "0.12.5", features = ["blocking"] }
+# Serialization
 serde = { version = "1.0.204", features = ["derive"] }
 serde_json = "1.0.120"
-tempfile = "3.10.1"
 typetag = "0.2.16"
+
+# File system
+dirs = "5.0.1"
+relative-path = { version = "1.9.3", features = ["serde"] }
+tempfile = "3.10.1"
 walkdir = "2.5.0"
 zip = "2.1.5"
+
+# Web access
+git2 = "0.19.0"
+reqwest = { version = "0.12.5", features = ["blocking"] }
+
+# Else
+anyhow = "1.0.86"
+clap = { version = "4.5.9", features = ["derive"] }
+lazy_static = "1.5.0"
