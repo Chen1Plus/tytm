@@ -59,7 +59,6 @@ pub struct Git {
 impl Source for Git {
     fn save_to(&self, path: &Path) -> Result<()> {
         let tmp_dir = fsx::TempDir::new()?;
-        // let content_dir = tmp_dir.path().join(&self.content);
         let content_dir = self.content.to_logical_path(&tmp_dir);
 
         println!("Cloning {}", self.url);
