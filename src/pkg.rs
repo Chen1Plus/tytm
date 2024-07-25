@@ -123,13 +123,6 @@ struct SubPackage {
 }
 
 impl SubPackage {
-    // fn validate<P: AsRef<Path>>(&self, from: P) {
-    //     let file = from.as_ref().join(&self.file);
-    //     assert!(file.exists());
-    //     assert!(file.is_file());
-    //     assert!(file.ends_with(".css"));
-    // }
-
     fn install(&self) -> Result<InstalledSubPackage> {
         let file = path::absolute(dirs::TYPORA_THEME.join(&self.file.file_name().unwrap()))?;
         fs::rename(&self.file, &file)?;

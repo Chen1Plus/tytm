@@ -141,11 +141,3 @@ pub(crate) fn ensure_dir<P: AsRef<Path>>(path: P) -> io::Result<()> {
     }
     Ok(())
 }
-
-/// Ensure that a directory exists, create parent directories if missing.
-fn ensure_dir_all<P: AsRef<Path>>(path: P) -> io::Result<()> {
-    if !path.as_ref().exists() {
-        fs::create_dir_all(path)?;
-    }
-    Ok(())
-}
