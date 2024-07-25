@@ -50,11 +50,8 @@ impl Manifest {
             id: self.id.clone(),
             name: self.name.clone(),
             version: self.version.clone(),
-            assets: self
-                .assets
-                .iter()
-                .map(|p| p.to_logical_path(path))
-                .collect(),
+            base_path: path.into(),
+            assets: self.assets.clone(),
             pkgs: self
                 .pkgs
                 .iter()
@@ -72,7 +69,8 @@ pub(crate) struct Package {
     id: String,
     name: String,
     version: String,
-    assets: Vec<PathBuf>,
+    base_path: PathBuf,
+    assets: Vec<RelativePathBuf>,
     pkgs: Vec<SubPackage>,
     pub(crate) default: Vec<String>,
 }
@@ -81,7 +79,8 @@ impl Package {
     pub(crate) fn install(&self) -> Result<InstalledPackage> {
         let mut paths = Vec::new();
         for asset in &self.assets {
-            let dst = dirs::TYPORA_THEME.join(asset.file_name().unwrap());
+            let dst = asset.to_logical_path(dirs::TYPORA_THEME.as_path());
+            let asset = asset.to_logical_path(&self.base_path);
             if asset.is_dir() {
                 let parent = asset.parent().unwrap();
                 paths.extend(
