@@ -7,108 +7,110 @@ use walkdir::WalkDir;
 pub(crate) use tempfile::tempfile;
 pub(crate) use tempfile::TempDir;
 
-#[cfg(debug_assertions)]
-pub(crate) mod defs {
-    use std::path::PathBuf;
+pub(crate) mod defs;
 
-    lazy_static::lazy_static! {
-        /// The user's data directory.
-        static ref DATA: PathBuf = dirs::data_dir().expect("Failed to find user's data directory");
+// #[cfg(debug_assertions)]
+// pub(crate) mod defs {
+//     use std::path::PathBuf;
 
-        static ref TYPORA: PathBuf = DATA.join("Typora");
-        pub(crate) static ref TYPORA_THEME: PathBuf = PathBuf::from("debug-dirs").join("typora-themes");
-        pub(crate) static ref TYPORA_MANIFEST: PathBuf = TYPORA_THEME.join("tytm-pkgs");
+//     lazy_static::lazy_static! {
+//         /// The user's data directory.
+//         static ref DATA: PathBuf = dirs::data_dir().expect("Failed to find user's data directory");
 
-        static ref TYTM: PathBuf = DATA.join("tytm");
-        pub(crate) static ref TYTM_MANIFEST: PathBuf = PathBuf::from("manifest");
-    }
+//         static ref TYPORA: PathBuf = DATA.join("Typora");
+//         pub(crate) static ref TYPORA_THEME: PathBuf = PathBuf::from("debug-dirs").join("typora-themes");
+//         pub(crate) static ref TYPORA_MANIFEST: PathBuf = TYPORA_THEME.join("tytm-pkgs");
 
-    pub(crate) fn init() {
-        use super::ensure_dir;
+//         static ref TYTM: PathBuf = DATA.join("tytm");
+//         pub(crate) static ref TYTM_MANIFEST: PathBuf = PathBuf::from("manifest");
+//     }
 
-        ensure_dir("debug-dirs").unwrap();
-        ensure_dir(TYPORA_THEME.as_path()).unwrap();
-        ensure_dir(TYPORA_MANIFEST.as_path()).unwrap();
-    }
-}
+//     pub(crate) fn init() {
+//         use super::ensure_dir;
 
-#[cfg(all(not(debug_assertions), target_os = "windows"))]
-pub(crate) mod defs {
-    use std::path::PathBuf;
+//         ensure_dir("debug-dirs").unwrap();
+//         ensure_dir(TYPORA_THEME.as_path()).unwrap();
+//         ensure_dir(TYPORA_MANIFEST.as_path()).unwrap();
+//     }
+// }
 
-    use super::ensure_dir;
+// #[cfg(all(not(debug_assertions), target_os = "windows"))]
+// pub(crate) mod defs {
+//     use std::path::PathBuf;
 
-    lazy_static::lazy_static! {
-        /// The user's data directory.
-        static ref DATA: PathBuf = dirs::data_dir().expect("Failed to find user's data directory");
+//     use super::ensure_dir;
 
-        static ref TYPORA: PathBuf = DATA.join("Typora");
-        pub(crate) static ref TYPORA_THEME: PathBuf = TYPORA.join("themes");
-        pub(crate) static ref TYPORA_MANIFEST: PathBuf = TYPORA_THEME.join("tytm-pkgs");
+//     lazy_static::lazy_static! {
+//         /// The user's data directory.
+//         static ref DATA: PathBuf = dirs::data_dir().expect("Failed to find user's data directory");
 
-        static ref TYTM: PathBuf = DATA.join("tytm");
-        pub(crate) static ref TYTM_MANIFEST: PathBuf = TYTM.join("manifest");
-    }
+//         static ref TYPORA: PathBuf = DATA.join("Typora");
+//         pub(crate) static ref TYPORA_THEME: PathBuf = TYPORA.join("themes");
+//         pub(crate) static ref TYPORA_MANIFEST: PathBuf = TYPORA_THEME.join("tytm-pkgs");
 
-    pub(crate) fn init() {
-        assert!(
-            TYPORA.exists() && TYPORA.is_dir(),
-            "Typora directory not found"
-        );
-        assert!(
-            TYPORA_THEME.exists() && TYPORA_THEME.is_dir(),
-            "Typora themes directory not found"
-        );
+//         static ref TYTM: PathBuf = DATA.join("tytm");
+//         pub(crate) static ref TYTM_MANIFEST: PathBuf = TYTM.join("manifest");
+//     }
 
-        ensure_dir(TYPORA_MANIFEST.as_path()).expect("Failed to create Typora manifest directory");
-        assert!(TYPORA_MANIFEST.is_dir());
+//     pub(crate) fn init() {
+//         assert!(
+//             TYPORA.exists() && TYPORA.is_dir(),
+//             "Typora directory not found"
+//         );
+//         assert!(
+//             TYPORA_THEME.exists() && TYPORA_THEME.is_dir(),
+//             "Typora themes directory not found"
+//         );
 
-        ensure_dir(TYTM.as_path()).expect("Failed to create TyTM directory");
-        assert!(TYTM.is_dir());
+//         ensure_dir(TYPORA_MANIFEST.as_path()).expect("Failed to create Typora manifest directory");
+//         assert!(TYPORA_MANIFEST.is_dir());
 
-        ensure_dir(TYTM_MANIFEST.as_path()).expect("Failed to create TyTM manifest directory");
-        assert!(TYTM_MANIFEST.is_dir());
-    }
-}
+//         ensure_dir(TYTM.as_path()).expect("Failed to create TyTM directory");
+//         assert!(TYTM.is_dir());
 
-#[cfg(all(not(debug_assertions), target_os = "macos"))]
-pub(crate) mod defs {
-    use std::path::PathBuf;
+//         ensure_dir(TYTM_MANIFEST.as_path()).expect("Failed to create TyTM manifest directory");
+//         assert!(TYTM_MANIFEST.is_dir());
+//     }
+// }
 
-    use super::ensure_dir;
+// #[cfg(all(not(debug_assertions), target_os = "macos"))]
+// pub(crate) mod defs {
+//     use std::path::PathBuf;
 
-    lazy_static::lazy_static! {
-        /// The user's data directory.
-        static ref DATA: PathBuf = dirs::data_dir().expect("Failed to find user's data directory");
+//     use super::ensure_dir;
 
-        static ref TYPORA: PathBuf = DATA.join("abnerworks.Typora");
-        pub(crate) static ref TYPORA_THEME: PathBuf = TYPORA.join("themes");
-        pub(crate) static ref TYPORA_MANIFEST: PathBuf = TYPORA_THEME.join("tytm-pkgs");
+//     lazy_static::lazy_static! {
+//         /// The user's data directory.
+//         static ref DATA: PathBuf = dirs::data_dir().expect("Failed to find user's data directory");
 
-        static ref TYTM: PathBuf = DATA.join("tytm");
-        pub(crate) static ref TYTM_MANIFEST: PathBuf = TYTM.join("manifest");
-    }
+//         static ref TYPORA: PathBuf = DATA.join("abnerworks.Typora");
+//         pub(crate) static ref TYPORA_THEME: PathBuf = TYPORA.join("themes");
+//         pub(crate) static ref TYPORA_MANIFEST: PathBuf = TYPORA_THEME.join("tytm-pkgs");
 
-    pub(crate) fn init() {
-        assert!(
-            TYPORA.exists() && TYPORA.is_dir(),
-            "Typora directory not found"
-        );
-        assert!(
-            TYPORA_THEME.exists() && TYPORA_THEME.is_dir(),
-            "Typora themes directory not found"
-        );
+//         static ref TYTM: PathBuf = DATA.join("tytm");
+//         pub(crate) static ref TYTM_MANIFEST: PathBuf = TYTM.join("manifest");
+//     }
 
-        ensure_dir(TYPORA_MANIFEST.as_path()).expect("Failed to create Typora manifest directory");
-        assert!(TYPORA_MANIFEST.is_dir());
+//     pub(crate) fn init() {
+//         assert!(
+//             TYPORA.exists() && TYPORA.is_dir(),
+//             "Typora directory not found"
+//         );
+//         assert!(
+//             TYPORA_THEME.exists() && TYPORA_THEME.is_dir(),
+//             "Typora themes directory not found"
+//         );
 
-        ensure_dir(TYTM.as_path()).expect("Failed to create TyTM directory");
-        assert!(TYTM.is_dir());
+//         ensure_dir(TYPORA_MANIFEST.as_path()).expect("Failed to create Typora manifest directory");
+//         assert!(TYPORA_MANIFEST.is_dir());
 
-        ensure_dir(TYTM_MANIFEST.as_path()).expect("Failed to create TyTM manifest directory");
-        assert!(TYTM_MANIFEST.is_dir());
-    }
-}
+//         ensure_dir(TYTM.as_path()).expect("Failed to create TyTM directory");
+//         assert!(TYTM.is_dir());
+
+//         ensure_dir(TYTM_MANIFEST.as_path()).expect("Failed to create TyTM manifest directory");
+//         assert!(TYTM_MANIFEST.is_dir());
+//     }
+// }
 
 /// Scan a directory recursively and return all files' paths relative to the directory.
 pub(crate) fn scan_dir<P: AsRef<Path>>(path: P) -> io::Result<Vec<RelativePathBuf>> {
