@@ -1,4 +1,8 @@
+use std::path;
 use std::{fs, io, path::Path};
+
+use relative_path::RelativePathBuf;
+use walkdir::WalkDir;
 
 pub(crate) use tempfile::tempfile;
 pub(crate) use tempfile::TempDir;
@@ -104,6 +108,19 @@ pub(crate) mod dirs {
         ensure_dir(TYTM_MANIFEST.as_path()).expect("Failed to create TyTM manifest directory");
         assert!(TYTM_MANIFEST.is_dir());
     }
+}
+
+/// Scan a directory recursively and return all files' paths relative to the directory.
+pub(crate) fn scan_dir<P: AsRef<Path>>(path: P) -> io::Result<Vec<RelativePathBuf>> {
+    let mut files = Vec::new();
+    files.extend(
+        WalkDir::new(&path)
+            .into_iter()
+            .filter_map(|e| e.ok())
+            .filter(|e| e.path().is_file())
+            .map(|e| RelativePathBuf::from_path(e.path().strip_prefix(&path).unwrap()).unwrap()),
+    );
+    Ok(files)
 }
 
 /// Move all files and directories from `src` to `dst`.

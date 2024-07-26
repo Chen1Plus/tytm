@@ -73,29 +73,18 @@ impl Package {
         let mut paths = Vec::new();
         for asset in &self.assets {
             let dst = asset.to_logical_path(dirs::TYPORA_THEME.as_path());
-            let asset = asset.to_logical_path(&self.base_path);
-            if asset.is_dir() {
-                let parent = asset.parent().unwrap();
-                paths.extend(
-                    WalkDir::new(&asset)
-                        .into_iter()
-                        .filter_map(|e| e.ok())
-                        .filter(|e| e.path().is_file())
-                        .map(|e| {
-                            dirs::TYPORA_THEME.join(
-                                path::absolute(e.path())
-                                    .unwrap()
-                                    .strip_prefix(parent)
-                                    .unwrap(),
-                            )
-                        }),
-                );
-                fsx::ensure_dir(&dst)?;
-                fsx::move_dir(asset, &dst)?;
-            } else if asset.is_file() {
-                fs::rename(asset, &dst)?;
-                paths.push(dst);
-            }
+            let real_asset = asset.to_logical_path(&self.base_path);
+
+            debug_assert!(real_asset.is_dir());
+
+            paths.extend(
+                fsx::scan_dir(&real_asset)?
+                    .into_iter()
+                    .map(|p| p.to_logical_path(dirs::TYPORA_THEME.join(asset.to_logical_path("")))),
+            );
+
+            fsx::ensure_dir(&dst)?;
+            fsx::move_dir(real_asset, &dst)?;
         }
 
         Ok(InstalledPackage {
