@@ -8,7 +8,7 @@ pub(crate) use tempfile::tempfile;
 pub(crate) use tempfile::TempDir;
 
 #[cfg(debug_assertions)]
-pub(crate) mod dirs {
+pub(crate) mod defs {
     use std::path::PathBuf;
 
     lazy_static::lazy_static! {
@@ -33,7 +33,7 @@ pub(crate) mod dirs {
 }
 
 #[cfg(all(not(debug_assertions), target_os = "windows"))]
-pub(crate) mod dirs {
+pub(crate) mod defs {
     use std::path::PathBuf;
 
     use super::ensure_dir;
@@ -72,7 +72,7 @@ pub(crate) mod dirs {
 }
 
 #[cfg(all(not(debug_assertions), target_os = "macos"))]
-pub(crate) mod dirs {
+pub(crate) mod defs {
     use std::path::PathBuf;
 
     use super::ensure_dir;

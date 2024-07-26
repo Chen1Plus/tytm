@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use serde_json as json;
 use walkdir::WalkDir;
 
-use crate::fsx::{self, dirs};
+use crate::fsx::{self, defs};
 
 mod source;
 
@@ -30,7 +30,7 @@ impl Manifest {
         git2::Repository::clone("https://github.com/Chen1Plus/tytm", &tmp_dir)?;
         fsx::move_dir(
             tmp_dir.path().join("manifest"),
-            dirs::TYTM_MANIFEST.as_path(),
+            defs::TYTM_MANIFEST.as_path(),
         )?;
         println!("Manifests updated.");
         Ok(())
@@ -38,7 +38,7 @@ impl Manifest {
 
     pub(crate) fn get(id: &str) -> io::Result<Self> {
         Ok(json::from_reader(File::open(
-            dirs::TYTM_MANIFEST.join(id).with_extension("json"),
+            defs::TYTM_MANIFEST.join(id).with_extension("json"),
         )?)
         .expect("Invalid manifest."))
     }
@@ -72,7 +72,7 @@ impl Package {
     pub(crate) fn install(&self) -> Result<InstalledPackage> {
         let mut paths = Vec::new();
         for asset in &self.assets {
-            let dst = asset.to_logical_path(dirs::TYPORA_THEME.as_path());
+            let dst = asset.to_logical_path(defs::TYPORA_THEME.as_path());
             let real_asset = asset.to_logical_path(&self.base_path);
 
             debug_assert!(real_asset.is_dir());
@@ -80,7 +80,7 @@ impl Package {
             paths.extend(
                 fsx::scan_dir(&real_asset)?
                     .into_iter()
-                    .map(|p| p.to_logical_path(dirs::TYPORA_THEME.join(asset.to_logical_path("")))),
+                    .map(|p| p.to_logical_path(defs::TYPORA_THEME.join(asset.to_logical_path("")))),
             );
 
             fsx::ensure_dir(&dst)?;
@@ -105,7 +105,7 @@ struct SubPackage {
 
 impl SubPackage {
     fn install(&self, from: &Path) -> Result<InstalledSubPackage> {
-        let file = path::absolute(dirs::TYPORA_THEME.join(&self.file.file_name().unwrap()))?;
+        let file = path::absolute(defs::TYPORA_THEME.join(&self.file.file_name().unwrap()))?;
         fs::rename(self.file.to_logical_path(from), &file)?;
         Ok(InstalledSubPackage {
             id: self.id.clone(),
@@ -132,7 +132,7 @@ struct InstalledSubPackage {
 impl InstalledPackage {
     pub(crate) fn get(id: &str) -> io::Result<Self> {
         Ok(json::from_reader(File::open(
-            dirs::TYPORA_MANIFEST.join(id).with_extension("json"),
+            defs::TYPORA_MANIFEST.join(id).with_extension("json"),
         )?)
         .expect("Invalid manifest."))
     }
@@ -140,7 +140,7 @@ impl InstalledPackage {
     pub(crate) fn save(&mut self) -> Result<()> {
         debug_assert!(!self.pkgs.is_empty(), "Try to save an empty package.");
 
-        let path = dirs::TYPORA_MANIFEST.join(&self.id).with_extension("json");
+        let path = defs::TYPORA_MANIFEST.join(&self.id).with_extension("json");
         if path.exists() {
             fs::remove_file(&path)?;
         }

@@ -52,7 +52,7 @@ enum Commands {
 }
 
 fn main() {
-    fsx::dirs::init();
+    fsx::defs::init();
 
     let cli = Cli::parse();
     match cli.command {
@@ -86,13 +86,13 @@ fn main() {
                 pkg.save().unwrap();
             } else {
                 pkg.uninstall().unwrap();
-                fs::remove_file(fsx::dirs::TYPORA_MANIFEST.join(theme + ".json")).unwrap();
+                fs::remove_file(fsx::defs::TYPORA_MANIFEST.join(theme + ".json")).unwrap();
             }
         }
 
         Commands::List => {
             println!("Installed themes:");
-            WalkDir::new(fsx::dirs::TYPORA_MANIFEST.as_path())
+            WalkDir::new(fsx::defs::TYPORA_MANIFEST.as_path())
                 .into_iter()
                 .filter_map(|e| e.ok())
                 .filter(|e| e.path().is_file())
