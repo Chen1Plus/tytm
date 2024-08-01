@@ -62,10 +62,9 @@ fn main() {
         }
 
         Commands::Add { theme, sub } => {
-            let tmp_dir = tempdir().unwrap();
             let pkg = Manifest::get(&theme)
                 .expect("Theme not found")
-                .store_package(tmp_dir.path())
+                .store_package()
                 .unwrap();
 
             let mut installed_pkg =

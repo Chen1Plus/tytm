@@ -4,14 +4,14 @@ use anyhow::Result;
 use relative_path::RelativePathBuf;
 use reqwest::blocking;
 use serde::{Deserialize, Serialize};
-use tempfile::{tempdir, tempfile};
+use tempfile::{tempdir, tempfile, TempDir};
 use zip::ZipArchive;
 
 use crate::fsx;
 
 #[typetag::serde(tag = "type", content = "value")]
 pub(super) trait Source {
-    fn save_to(&self, path: &Path) -> Result<()>;
+    fn download(&self) -> Result<TempDir>;
 }
 
 #[derive(Serialize, Deserialize)]
@@ -23,7 +23,7 @@ pub struct Zip {
 
 #[typetag::serde]
 impl Source for Zip {
-    fn save_to(&self, path: &Path) -> Result<()> {
+    fn download(&self) -> Result<TempDir> {
         let tmp_dir = tempdir()?;
         let content_dir = self.content.to_logical_path(&tmp_dir);
         {
@@ -45,7 +45,9 @@ impl Source for Zip {
             }
         }
 
-        fsx::move_dir(content_dir, path).map_err(Into::into)
+        let tmp = tempdir()?;
+        fsx::move_dir(content_dir, &tmp)?;
+        Ok(tmp)
     }
 }
 
@@ -58,7 +60,7 @@ pub struct Git {
 
 #[typetag::serde]
 impl Source for Git {
-    fn save_to(&self, path: &Path) -> Result<()> {
+    fn download(&self) -> Result<TempDir> {
         let tmp_dir = tempdir()?;
         let content_dir = self.content.to_logical_path(&tmp_dir);
 
@@ -77,6 +79,8 @@ impl Source for Git {
             }
         }
 
-        fsx::move_dir(content_dir, path).map_err(Into::into)
+        let tmp = tempdir()?;
+        fsx::move_dir(content_dir, &tmp)?;
+        Ok(tmp)
     }
 }

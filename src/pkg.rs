@@ -6,7 +6,7 @@ use anyhow::Result;
 use relative_path::RelativePathBuf;
 use serde::{Deserialize, Serialize};
 use serde_json as json;
-use tempfile::tempdir;
+use tempfile::{tempdir, TempDir};
 use walkdir::WalkDir;
 
 use crate::fsx::{self, defs, ObjName};
@@ -44,14 +44,14 @@ impl Manifest {
         .expect("Invalid manifest."))
     }
 
-    pub(crate) fn store_package(&self, path: &Path) -> Result<Package> {
-        self.source.save_to(path)?;
+    pub(crate) fn store_package(&self) -> Result<Package> {
+        let tmp = self.source.download()?;
 
         Ok(Package {
             id: self.id.clone(),
             name: self.name.clone(),
             version: self.version.clone(),
-            base_path: path.into(),
+            base_path: tmp,
             assets: self.assets.clone(),
             pkgs: self.pkgs.clone(),
             default: self.default.clone(),
@@ -63,7 +63,7 @@ pub(crate) struct Package {
     id: String,
     name: String,
     version: String,
-    base_path: PathBuf,
+    base_path: TempDir,
     assets: Vec<ObjName>,
     pkgs: Vec<SubPackage>,
     pub(crate) default: Vec<String>,
@@ -85,7 +85,7 @@ impl Package {
             );
 
             fsx::ensure_dir(&dst)?;
-            real_asset.move_to(&dst)?;
+            real_asset.move_to(defs::TYPORA_THEME.as_path())?;
         }
 
         Ok(InstalledPackage {
@@ -162,7 +162,7 @@ impl InstalledPackage {
                 .iter()
                 .find(|pkg| pkg.id == id)
                 .expect("Sub theme not found")
-                .install(&from.base_path)?,
+                .install(&from.base_path.path())?,
         );
         Ok(())
     }
