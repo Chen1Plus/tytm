@@ -1,0 +1,29 @@
+{
+    "id": "chernobyl",
+    "name": "Chernobyl",
+    "version": "1.0.7",
+    "source": {
+        "type": "Zip",
+        "value": {
+            "url": "https://github.com/obscurefreeman/typora_theme_blackout/releases/download/V1.0.7/blackout_theme_pack.zip",
+            "content": "./",
+            "excludes": []
+        }
+    },
+    "assets": [
+        "obscurefreeman"
+    ],
+    "pkgs": [
+        {
+            "id": "chernobyl",
+            "file": "chernobyl.css"
+        },
+        {
+            "id": "chernobyl-blue",
+            "file": "chernobyl-blue.css"
+        }
+    ],
+    "default": [
+        "chernobyl"
+    ]
+}
