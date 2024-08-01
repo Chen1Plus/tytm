@@ -6,6 +6,7 @@ use anyhow::Result;
 use relative_path::RelativePathBuf;
 use serde::{Deserialize, Serialize};
 use serde_json as json;
+use tempfile::tempdir;
 use walkdir::WalkDir;
 
 use crate::fsx::{self, defs, ObjName};
@@ -25,7 +26,7 @@ pub(crate) struct Manifest {
 
 impl Manifest {
     pub(crate) fn update() -> Result<()> {
-        let tmp_dir = fsx::TempDir::new()?;
+        let tmp_dir = tempdir()?;
         println!("Fetching manifests...");
         git2::Repository::clone("https://github.com/Chen1Plus/tytm", &tmp_dir)?;
         fsx::move_dir(

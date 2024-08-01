@@ -5,9 +5,6 @@ use relative_path::RelativePathBuf;
 use serde::{Deserialize, Serialize};
 use walkdir::WalkDir;
 
-pub(crate) use tempfile::tempfile;
-pub(crate) use tempfile::TempDir;
-
 pub(crate) mod defs;
 
 /// Scan a directory recursively and return all files' paths relative to the directory.

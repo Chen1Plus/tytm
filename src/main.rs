@@ -1,6 +1,7 @@
 use std::fs;
 
 use clap::{Parser, Subcommand};
+use tempfile::tempdir;
 use walkdir::WalkDir;
 
 mod fsx;
@@ -61,7 +62,7 @@ fn main() {
         }
 
         Commands::Add { theme, sub } => {
-            let tmp_dir = fsx::TempDir::new().unwrap();
+            let tmp_dir = tempdir().unwrap();
             let pkg = Manifest::get(&theme)
                 .expect("Theme not found")
                 .store_package(tmp_dir.path())

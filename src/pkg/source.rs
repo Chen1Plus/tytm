@@ -4,6 +4,7 @@ use anyhow::Result;
 use relative_path::RelativePathBuf;
 use reqwest::blocking;
 use serde::{Deserialize, Serialize};
+use tempfile::{tempdir, tempfile};
 use zip::ZipArchive;
 
 use crate::fsx;
@@ -23,10 +24,10 @@ pub struct Zip {
 #[typetag::serde]
 impl Source for Zip {
     fn save_to(&self, path: &Path) -> Result<()> {
-        let tmp_dir = fsx::TempDir::new()?;
+        let tmp_dir = tempdir()?;
         let content_dir = self.content.to_logical_path(&tmp_dir);
         {
-            let mut file = fsx::tempfile()?;
+            let mut file = tempfile()?;
             println!("Downloading {}", self.url);
             blocking::get(&self.url)?.copy_to(&mut file)?;
             ZipArchive::new(file)?.extract(&tmp_dir)?;
@@ -58,7 +59,7 @@ pub struct Git {
 #[typetag::serde]
 impl Source for Git {
     fn save_to(&self, path: &Path) -> Result<()> {
-        let tmp_dir = fsx::TempDir::new()?;
+        let tmp_dir = tempdir()?;
         let content_dir = self.content.to_logical_path(&tmp_dir);
 
         println!("Cloning {}", self.url);
