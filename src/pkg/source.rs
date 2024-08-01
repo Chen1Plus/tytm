@@ -1,5 +1,3 @@
-use std::{fs, path::Path};
-
 use anyhow::Result;
 use relative_path::RelativePathBuf;
 use reqwest::blocking;

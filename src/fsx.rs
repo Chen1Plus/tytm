@@ -1,4 +1,4 @@
-use std::path::{self, PathBuf};
+use std::path::PathBuf;
 use std::{fs, io, path::Path};
 
 use relative_path::RelativePathBuf;

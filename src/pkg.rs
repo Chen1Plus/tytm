@@ -9,7 +9,7 @@ use serde_json as json;
 use tempfile::{tempdir, TempDir};
 use walkdir::WalkDir;
 
-use crate::fsx::{self, defs, ObjName};
+use crate::fsx::{self, defs, Obj, ObjName};
 
 mod source;
 
@@ -29,10 +29,8 @@ impl Manifest {
         let tmp_dir = tempdir()?;
         println!("Fetching manifests...");
         git2::Repository::clone("https://github.com/Chen1Plus/tytm", &tmp_dir)?;
-        fsx::move_dir(
-            tmp_dir.path().join("manifest"),
-            defs::TYTM_MANIFEST.as_path(),
-        )?;
+        Obj::from(tmp_dir.path().join("manifest"))
+            .move_to(defs::TYTM_MANIFEST.as_path().parent().unwrap())?;
         println!("Manifests updated.");
         Ok(())
     }

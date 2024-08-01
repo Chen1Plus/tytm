@@ -1,7 +1,6 @@
 use std::fs;
 
 use clap::{Parser, Subcommand};
-use tempfile::tempdir;
 use walkdir::WalkDir;
 
 mod fsx;
