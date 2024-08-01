@@ -8,6 +8,7 @@ use walkdir::WalkDir;
 pub(crate) mod defs;
 
 /// Scan a directory recursively and return all files' paths relative to the directory.
+#[deprecated]
 pub(crate) fn scan_dir<P: AsRef<Path>>(path: P) -> io::Result<Vec<RelativePathBuf>> {
     let mut files = Vec::new();
     files.extend(
@@ -23,6 +24,7 @@ pub(crate) fn scan_dir<P: AsRef<Path>>(path: P) -> io::Result<Vec<RelativePathBu
 /// Move all files and directories from `src` to `dst`.
 /// You should ensure that both `src` and `dst` exist and are directories.
 /// If a file already exists, it will be overwritten.
+#[deprecated]
 pub(crate) fn move_dir<P, Q>(src: P, dst: Q) -> io::Result<()>
 where
     P: AsRef<Path>,
@@ -49,6 +51,7 @@ where
 }
 
 /// Ensure that a directory exists, failed if missing parent directories.
+#[deprecated]
 pub(crate) fn ensure_dir<P: AsRef<Path>>(path: P) -> io::Result<()> {
     if !path.as_ref().exists() {
         fs::create_dir(path)?;
