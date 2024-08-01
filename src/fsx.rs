@@ -4,6 +4,7 @@ use std::path::PathBuf;
 use std::{fs, io, path::Path};
 
 use serde::{Deserialize, Serialize};
+use serde_json as json;
 
 pub(crate) mod defs;
 
@@ -100,41 +101,47 @@ pub(crate) struct ShareDir {
 }
 
 impl ShareDir {
-    fn new(path: PathBuf) -> Self {
-        Self {
-            path,
-            used_by: HashSet::new(),
-        }
-    }
-
-    pub(crate) fn get<P: AsRef<Path>>(path: P, id: String) -> io::Result<Self> {
-        if !path.as_ref().is_dir() {
-            fs::create_dir_all(&path)?;
-        }
-
+    pub(crate) fn get<P: AsRef<Path>>(path: P) -> io::Result<Self> {
         let file = path.as_ref().join(".tytm.fsx.lock");
-        let mut ret = if file.is_file() {
-            serde_json::from_reader(File::open(&file)?).unwrap()
+
+        Ok(if file.is_file() {
+            let dir: ShareDir = json::from_reader(File::open(&file)?)?;
+            if dir.path != path.as_ref() {
+                panic!("Got a broken ShareDir at {:?}", path.as_ref())
+            }
+            dir
         } else {
-            Self::new(path.as_ref().to_path_buf())
-        };
-        ret.used_by.insert(id);
-        Ok(ret)
+            if !path.as_ref().is_dir() {
+                fs::create_dir_all(&path)?;
+            }
+
+            Self {
+                path: path.as_ref().to_path_buf(),
+                used_by: HashSet::new(),
+            }
+        })
     }
 
-    pub(crate) fn remove(&mut self, by: &str) -> io::Result<()> {
-        self.used_by.retain(|x| x != by);
+    pub(crate) fn used_by<S: ToString>(&mut self, by: S) -> io::Result<()> {
+        self.used_by.insert(by.to_string());
+        self.save()
+    }
+
+    pub(crate) fn removed_by<S: AsRef<str>>(&mut self, by: S) -> io::Result<()> {
+        self.used_by.retain(|x| x != by.as_ref());
         if self.used_by.is_empty() {
-            Obj::from(self.path.clone()).remove()?;
+            Obj::from(self.path.clone()).remove()
+        } else {
+            self.save()
         }
-        Ok(())
     }
 
-    pub(crate) fn save(&self) -> io::Result<()> {
-        if !self.used_by.is_empty() {
-            let file = self.path.join(".tytm.fsx.lock");
-            serde_json::to_writer(File::create(file)?, self)?;
+    // this will return error if you tend to remove a deleted directory
+    fn save(&self) -> io::Result<()> {
+        let file = self.path.join(".tytm.fsx.lock");
+        if file.is_file() {
+            fs::remove_file(&file)?;
         }
-        Ok(())
+        json::to_writer(File::create(&file)?, self).map_err(Into::into)
     }
 }

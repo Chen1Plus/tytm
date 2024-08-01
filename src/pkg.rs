@@ -74,7 +74,7 @@ impl Package {
 
             // debug_assert!(real_asset.is_dir());
 
-            ShareDir::get(&dst, self.id.clone())?.save()?;
+            ShareDir::get(&dst)?.used_by(&self.id)?;
             real_asset.move_to(defs::TYPORA_THEME.as_path())?;
         }
 
@@ -181,9 +181,7 @@ impl InstalledPackage {
     fn clear_assets(&mut self) -> io::Result<()> {
         debug_assert!(self.pkgs.is_empty());
         for path in self.assets.iter() {
-            let mut ast = ShareDir::get(path, self.id.clone()).unwrap();
-            ast.remove(&self.id)?;
-            ast.save()?;
+            ShareDir::get(path)?.removed_by(&self.id)?;
         }
         self.assets.clear();
         Ok(())
