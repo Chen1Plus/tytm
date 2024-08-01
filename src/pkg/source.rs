@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use tempfile::{tempdir, tempfile, TempDir};
 use zip::ZipArchive;
 
-use crate::fsx;
+use crate::fsx::{self, Obj};
 
 #[typetag::serde(tag = "type", content = "value")]
 pub(super) trait Source {
@@ -33,16 +33,12 @@ impl Source for Zip {
             ZipArchive::new(file)?.extract(&tmp_dir)?;
         }
 
-        for path in self
+        for obj in self
             .excludes
             .iter()
-            .map(|p| p.to_logical_path(&content_dir))
+            .map(|p| Obj::from(p.to_logical_path(&content_dir)))
         {
-            if path.is_dir() {
-                fs::remove_dir_all(path)?;
-            } else if path.is_file() {
-                fs::remove_file(path)?;
-            }
+            obj.remove()?;
         }
 
         let tmp = tempdir()?;
@@ -67,16 +63,12 @@ impl Source for Git {
         println!("Cloning {}", self.url);
         git2::Repository::clone(&self.url, &tmp_dir)?;
 
-        for path in self
+        for obj in self
             .excludes
             .iter()
-            .map(|p| p.to_logical_path(&content_dir))
+            .map(|p| Obj::from(p.to_logical_path(&content_dir)))
         {
-            if path.is_dir() {
-                fs::remove_dir_all(path)?;
-            } else if path.is_file() {
-                fs::remove_file(path)?;
-            }
+            obj.remove()?;
         }
 
         let tmp = tempdir()?;
