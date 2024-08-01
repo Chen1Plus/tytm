@@ -25,9 +25,11 @@ impl Source for Zip {
         let tmp_dir = tempdir()?;
         let content_dir = self.content.to_logical_path(&tmp_dir);
         {
-            let mut file = tempfile()?;
             println!("Downloading {}", self.url);
+            let mut file = tempfile()?;
             blocking::get(&self.url)?.copy_to(&mut file)?;
+
+            println!("Extracting...");
             ZipArchive::new(file)?.extract(&tmp_dir)?;
         }
 
