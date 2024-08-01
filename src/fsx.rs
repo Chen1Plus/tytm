@@ -67,10 +67,6 @@ impl Obj {
             fs::remove_file(&self.0)
         }
     }
-
-    pub(crate) fn name(&self) -> ObjName {
-        ObjName(self.0.file_name().unwrap().to_str().unwrap().to_string())
-    }
 }
 
 impl From<PathBuf> for Obj {
