@@ -13,7 +13,6 @@ typetag = "0.2.16"
 dirs = "5.0.1"
 relative-path = { version = "1.9.3", features = ["serde"] }
 tempfile = "3.10.1"
-walkdir = "2.5.0"
 zip = "2.1.5"
 
 # Web access

@@ -1,7 +1,6 @@
 use std::fs;
 
 use clap::{Parser, Subcommand};
-use walkdir::WalkDir;
 
 mod fsx;
 mod pkg;
@@ -91,7 +90,8 @@ fn main() {
 
         Commands::List => {
             println!("Installed themes:");
-            WalkDir::new(fsx::defs::TYPORA_MANIFEST.as_path())
+            fs::read_dir(fsx::defs::TYPORA_MANIFEST.as_path())
+                .unwrap()
                 .into_iter()
                 .filter_map(|e| e.ok())
                 .filter(|e| e.path().is_file())
