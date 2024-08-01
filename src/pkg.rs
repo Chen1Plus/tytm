@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use serde_json as json;
 use walkdir::WalkDir;
 
-use crate::fsx::{self, defs};
+use crate::fsx::{self, defs, ObjName};
 
 mod source;
 
@@ -18,7 +18,7 @@ pub(crate) struct Manifest {
     name: String,
     version: String,
     source: Box<dyn source::Source>,
-    assets: Vec<RelativePathBuf>,
+    assets: Vec<ObjName>,
     pkgs: Vec<SubPackage>,
     default: Vec<String>,
 }
@@ -63,7 +63,7 @@ pub(crate) struct Package {
     name: String,
     version: String,
     base_path: PathBuf,
-    assets: Vec<RelativePathBuf>,
+    assets: Vec<ObjName>,
     pkgs: Vec<SubPackage>,
     pub(crate) default: Vec<String>,
 }
@@ -72,19 +72,19 @@ impl Package {
     pub(crate) fn install(&self) -> Result<InstalledPackage> {
         let mut paths = Vec::new();
         for asset in &self.assets {
-            let dst = asset.to_logical_path(defs::TYPORA_THEME.as_path());
-            let real_asset = asset.to_logical_path(&self.base_path);
+            let dst = asset.base(defs::TYPORA_THEME.as_path());
+            let mut real_asset = asset.base(&self.base_path);
 
-            debug_assert!(real_asset.is_dir());
+            // debug_assert!(real_asset.is_dir());
 
             paths.extend(
                 fsx::scan_dir(&real_asset)?
                     .into_iter()
-                    .map(|p| p.to_logical_path(defs::TYPORA_THEME.join(asset.to_logical_path("")))),
+                    .map(|p| p.to_logical_path(defs::TYPORA_THEME.join(asset.base("")))),
             );
 
             fsx::ensure_dir(&dst)?;
-            fsx::move_dir(real_asset, &dst)?;
+            real_asset.move_to(&dst)?;
         }
 
         Ok(InstalledPackage {

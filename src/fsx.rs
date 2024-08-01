@@ -1,7 +1,8 @@
-use std::path;
+use std::path::{self, PathBuf};
 use std::{fs, io, path::Path};
 
 use relative_path::RelativePathBuf;
+use serde::{Deserialize, Serialize};
 use walkdir::WalkDir;
 
 pub(crate) use tempfile::tempfile;
@@ -56,4 +57,63 @@ pub(crate) fn ensure_dir<P: AsRef<Path>>(path: P) -> io::Result<()> {
         fs::create_dir(path)?;
     }
     Ok(())
+}
+
+// An object that represents a file or a whole directory.
+// note: can not be root directory
+#[derive(Clone, Serialize, Deserialize)]
+pub(crate) struct Obj(PathBuf);
+
+impl Obj {
+    pub(crate) fn move_to<P: AsRef<Path>>(&mut self, dst: P) -> io::Result<()> {
+        debug_assert!(dst.as_ref().is_dir());
+
+        let dst_path = dst.as_ref().join(&self.0.file_name().unwrap());
+        if self.0.is_dir() {
+            if !dst_path.exists() {
+                fs::create_dir(&dst_path)?;
+            }
+            for item in fs::read_dir(&self.0)? {
+                Self(item?.path()).move_to(&dst_path)?;
+            }
+        } else {
+            fs::rename(&self.0, &dst_path)?;
+        }
+
+        *self = Self(dst_path);
+        Ok(())
+    }
+
+    pub(crate) fn remove(self) -> io::Result<()> {
+        if self.0.is_dir() {
+            fs::remove_dir_all(&self.0)
+        } else {
+            fs::remove_file(&self.0)
+        }
+    }
+
+    pub(crate) fn name(&self) -> ObjName {
+        ObjName(self.0.file_name().unwrap().to_str().unwrap().to_string())
+    }
+}
+
+impl From<PathBuf> for Obj {
+    fn from(path: PathBuf) -> Self {
+        Self(path)
+    }
+}
+
+impl AsRef<Path> for Obj {
+    fn as_ref(&self) -> &Path {
+        &self.0
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub(crate) struct ObjName(String);
+
+impl ObjName {
+    pub(crate) fn base<P: AsRef<Path>>(&self, path: P) -> Obj {
+        Obj(path.as_ref().join(&self.0))
+    }
 }
