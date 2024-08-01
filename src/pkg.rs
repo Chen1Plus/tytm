@@ -9,7 +9,7 @@ use serde_json as json;
 use tempfile::{tempdir, TempDir};
 use walkdir::WalkDir;
 
-use crate::fsx::{self, defs, Obj, ObjName};
+use crate::fsx::{self, defs, Obj, ObjName, ShareDir};
 
 mod source;
 
@@ -69,18 +69,11 @@ pub(crate) struct Package {
 
 impl Package {
     pub(crate) fn install(&self) -> Result<InstalledPackage> {
-        let mut paths = Vec::new();
         for asset in &self.assets {
             let dst = asset.base(defs::TYPORA_THEME.as_path());
             let mut real_asset = asset.base(&self.base_path);
 
             // debug_assert!(real_asset.is_dir());
-
-            paths.extend(
-                fsx::scan_dir(&real_asset)?
-                    .into_iter()
-                    .map(|p| p.to_logical_path(defs::TYPORA_THEME.join(asset.base("")))),
-            );
 
             fsx::ensure_dir(&dst)?;
             real_asset.move_to(defs::TYPORA_THEME.as_path())?;
@@ -90,7 +83,15 @@ impl Package {
             id: self.id.clone(),
             name: self.name.clone(),
             version: self.version.clone(),
-            assets: paths,
+            assets: self
+                .assets
+                .iter()
+                .map(|x| {
+                    let dir = ShareDir::get(x.base(defs::TYPORA_THEME.as_path()), self.id.clone()).unwrap();
+                    dir.save().unwrap();
+                    dir
+                })
+                .collect(),
             pkgs: Vec::new(),
         })
     }
@@ -118,7 +119,7 @@ pub(crate) struct InstalledPackage {
     id: String,
     name: String,
     version: String,
-    assets: Vec<PathBuf>,
+    assets: Vec<ShareDir>,
     pkgs: Vec<InstalledSubPackage>,
 }
 
@@ -184,8 +185,10 @@ impl InstalledPackage {
 
     fn clear_assets(&mut self) -> io::Result<()> {
         debug_assert!(self.pkgs.is_empty());
-        for path in self.assets.iter() {
-            fs::remove_file(path)?;
+        for path in self.assets.iter_mut() {
+            let mut ast = ShareDir::get(path.path(), self.id.clone()).unwrap();
+            ast.remove(&self.id)?;
+            ast.save()?;
         }
         self.assets.clear();
         Ok(())

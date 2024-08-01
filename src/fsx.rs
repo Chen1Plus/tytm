@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+use std::fs::File;
 use std::path::PathBuf;
 use std::{fs, io, path::Path};
 
@@ -65,10 +67,10 @@ pub(crate) fn ensure_dir<P: AsRef<Path>>(path: P) -> io::Result<()> {
 pub(crate) struct Obj(PathBuf);
 
 impl Obj {
-    pub(crate) fn move_to<P: AsRef<Path>>(&mut self, dst: P) -> io::Result<()> {
-        debug_assert!(dst.as_ref().is_dir());
+    pub(crate) fn move_to<P: AsRef<Path>>(&mut self, to: P) -> io::Result<()> {
+        debug_assert!(to.as_ref().is_dir());
 
-        let dst_path = dst.as_ref().join(&self.0.file_name().unwrap());
+        let dst_path = to.as_ref().join(&self.0.file_name().unwrap());
         if self.0.is_dir() {
             if !dst_path.exists() {
                 fs::create_dir(&dst_path)?;
@@ -81,6 +83,24 @@ impl Obj {
         }
 
         *self = Self(dst_path);
+        Ok(())
+    }
+
+    // move all files and directories inside the object to `to`
+    // if object is a file, it will be moved to `to` as well
+    pub(crate) fn move_inside_to<P: AsRef<Path>>(&mut self, to: P) -> io::Result<()> {
+        debug_assert!(to.as_ref().is_dir());
+
+        if self.0.is_dir() {
+            for item in fs::read_dir(&self.0)? {
+                Self(item?.path()).move_to(&to)?;
+            }
+            *self = Self(to.as_ref().to_owned());
+        } else {
+            let dst_path = to.as_ref().join(&self.0.file_name().unwrap());
+            fs::rename(&self.0, &dst_path)?;
+            *self = Self(dst_path);
+        }
         Ok(())
     }
 
@@ -115,5 +135,50 @@ pub(crate) struct ObjName(String);
 impl ObjName {
     pub(crate) fn base<P: AsRef<Path>>(&self, path: P) -> Obj {
         Obj(path.as_ref().join(&self.0))
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub(crate) struct ShareDir {
+    path: PathBuf,
+    used_by: HashSet<String>,
+}
+
+impl ShareDir {
+    fn new(path: PathBuf) -> Self {
+        Self {
+            path,
+            used_by: HashSet::new(),
+        }
+    }
+
+    pub(crate) fn get<P: AsRef<Path>>(path: P, id: String) -> io::Result<Self> {
+        let mut ret;
+        let file = path.as_ref().join(".tytm.fsx.lock");
+        if path.as_ref().is_dir() && file.is_file() {
+            ret = serde_json::from_reader(File::open(file)?).unwrap();
+        } else {
+            ret = Self::new(path.as_ref().to_path_buf());
+        }
+        ret.used_by.insert(id);
+        Ok(ret)
+    }
+
+    pub(crate) fn remove(&mut self, by: &str) -> io::Result<()> {
+        self.used_by.retain(|x| x != by);
+        if self.used_by.is_empty() {
+            Obj::from(self.path.clone()).remove()?;
+        }
+        Ok(())
+    }
+
+    pub(crate) fn save(&self) -> io::Result<()> {
+        let file = self.path.join(".tytm.fsx.lock");
+        serde_json::to_writer(File::create(file)?, self)?;
+        Ok(())
+    }
+    
+    pub(crate) fn path(&self) -> &Path {
+        &self.path
     }
 }
