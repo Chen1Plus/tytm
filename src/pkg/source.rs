@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use tempfile::{tempdir, tempfile, TempDir};
 use zip::ZipArchive;
 
-use crate::fsx::{self, Obj};
+use crate::fsx::Obj;
 
 #[typetag::serde(tag = "type", content = "value")]
 pub(super) trait Source {
@@ -39,9 +39,8 @@ impl Source for Zip {
             obj.remove()?;
         }
 
-        let tmp = tempdir()?;
-        fsx::move_dir(content_dir, &tmp)?;
-        Ok(tmp)
+        Obj::from(content_dir).move_inside_to(&tmp_dir)?;
+        Ok(tmp_dir)
     }
 }
 
@@ -69,8 +68,7 @@ impl Source for Git {
             obj.remove()?;
         }
 
-        let tmp = tempdir()?;
-        fsx::move_dir(content_dir, &tmp)?;
-        Ok(tmp)
+        Obj::from(content_dir).move_inside_to(&tmp_dir)?;
+        Ok(tmp_dir)
     }
 }
