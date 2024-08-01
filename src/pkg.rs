@@ -7,7 +7,6 @@ use relative_path::RelativePathBuf;
 use serde::{Deserialize, Serialize};
 use serde_json as json;
 use tempfile::{tempdir, TempDir};
-use walkdir::WalkDir;
 
 use crate::fsx::{self, defs, Obj, ObjName, ShareDir};
 

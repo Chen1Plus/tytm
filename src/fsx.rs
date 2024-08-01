@@ -3,25 +3,9 @@ use std::fs::File;
 use std::path::PathBuf;
 use std::{fs, io, path::Path};
 
-use relative_path::RelativePathBuf;
 use serde::{Deserialize, Serialize};
-use walkdir::WalkDir;
 
 pub(crate) mod defs;
-
-/// Scan a directory recursively and return all files' paths relative to the directory.
-#[deprecated]
-pub(crate) fn scan_dir<P: AsRef<Path>>(path: P) -> io::Result<Vec<RelativePathBuf>> {
-    let mut files = Vec::new();
-    files.extend(
-        WalkDir::new(&path)
-            .into_iter()
-            .filter_map(|e| e.ok())
-            .filter(|e| e.path().is_file())
-            .map(|e| RelativePathBuf::from_path(e.path().strip_prefix(&path).unwrap()).unwrap()),
-    );
-    Ok(files)
-}
 
 /// Move all files and directories from `src` to `dst`.
 /// You should ensure that both `src` and `dst` exist and are directories.
