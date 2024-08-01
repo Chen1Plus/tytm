@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use serde_json as json;
 use tempfile::{tempdir, TempDir};
 
-use crate::fsx::{self, defs, Obj, ObjName, ShareDir};
+use crate::fsx::{defs, Obj, ObjName, ShareDir};
 
 mod source;
 
@@ -74,7 +74,6 @@ impl Package {
 
             // debug_assert!(real_asset.is_dir());
 
-            fsx::ensure_dir(&dst)?;
             ShareDir::get(&dst, self.id.clone())?.save()?;
             real_asset.move_to(defs::TYPORA_THEME.as_path())?;
         }

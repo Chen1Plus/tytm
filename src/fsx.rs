@@ -7,35 +7,6 @@ use serde::{Deserialize, Serialize};
 
 pub(crate) mod defs;
 
-/// Move all files and directories from `src` to `dst`.
-/// You should ensure that both `src` and `dst` exist and are directories.
-/// If a file already exists, it will be overwritten.
-#[deprecated]
-pub(crate) fn move_dir<P, Q>(src: P, dst: Q) -> io::Result<()>
-where
-    P: AsRef<Path>,
-    Q: AsRef<Path>,
-{
-    debug_assert!(src.as_ref().exists() && src.as_ref().is_dir());
-    debug_assert!(dst.as_ref().exists() && dst.as_ref().is_dir());
-
-    for item in fs::read_dir(src)? {
-        let item = item?;
-
-        let ty = item.file_type()?;
-        let path = item.path();
-        let dst_path = dst.as_ref().join(item.file_name());
-
-        if ty.is_dir() {
-            ensure_dir(&dst_path)?;
-            move_dir(path, &dst_path)?;
-        } else if ty.is_file() {
-            fs::rename(path, &dst_path)?;
-        }
-    }
-    Ok(())
-}
-
 /// Ensure that a directory exists, failed if missing parent directories.
 #[deprecated]
 pub(crate) fn ensure_dir<P: AsRef<Path>>(path: P) -> io::Result<()> {
@@ -137,13 +108,16 @@ impl ShareDir {
     }
 
     pub(crate) fn get<P: AsRef<Path>>(path: P, id: String) -> io::Result<Self> {
-        let mut ret;
-        let file = path.as_ref().join(".tytm.fsx.lock");
-        if path.as_ref().is_dir() && file.is_file() {
-            ret = serde_json::from_reader(File::open(file)?).unwrap();
-        } else {
-            ret = Self::new(path.as_ref().to_path_buf());
+        if !path.as_ref().is_dir() {
+            fs::create_dir_all(&path)?;
         }
+
+        let file = path.as_ref().join(".tytm.fsx.lock");
+        let mut ret = if file.is_file() {
+            serde_json::from_reader(File::open(&file)?).unwrap()
+        } else {
+            Self::new(path.as_ref().to_path_buf())
+        };
         ret.used_by.insert(id);
         Ok(ret)
     }
@@ -162,9 +136,5 @@ impl ShareDir {
             serde_json::to_writer(File::create(file)?, self)?;
         }
         Ok(())
-    }
-
-    pub(crate) fn path(&self) -> &Path {
-        &self.path
     }
 }
