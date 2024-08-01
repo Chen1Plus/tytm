@@ -76,6 +76,7 @@ impl Package {
             // debug_assert!(real_asset.is_dir());
 
             fsx::ensure_dir(&dst)?;
+            ShareDir::get(&dst, self.id.clone())?.save()?;
             real_asset.move_to(defs::TYPORA_THEME.as_path())?;
         }
 
@@ -86,11 +87,7 @@ impl Package {
             assets: self
                 .assets
                 .iter()
-                .map(|x| {
-                    let dir = ShareDir::get(x.base(defs::TYPORA_THEME.as_path()), self.id.clone()).unwrap();
-                    dir.save().unwrap();
-                    dir
-                })
+                .map(|x| x.base(defs::TYPORA_THEME.as_path()).as_ref().to_owned())
                 .collect(),
             pkgs: Vec::new(),
         })
@@ -119,7 +116,7 @@ pub(crate) struct InstalledPackage {
     id: String,
     name: String,
     version: String,
-    assets: Vec<ShareDir>,
+    assets: Vec<PathBuf>,
     pkgs: Vec<InstalledSubPackage>,
 }
 
@@ -185,8 +182,8 @@ impl InstalledPackage {
 
     fn clear_assets(&mut self) -> io::Result<()> {
         debug_assert!(self.pkgs.is_empty());
-        for path in self.assets.iter_mut() {
-            let mut ast = ShareDir::get(path.path(), self.id.clone()).unwrap();
+        for path in self.assets.iter() {
+            let mut ast = ShareDir::get(path, self.id.clone()).unwrap();
             ast.remove(&self.id)?;
             ast.save()?;
         }

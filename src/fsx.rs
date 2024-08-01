@@ -173,11 +173,13 @@ impl ShareDir {
     }
 
     pub(crate) fn save(&self) -> io::Result<()> {
-        let file = self.path.join(".tytm.fsx.lock");
-        serde_json::to_writer(File::create(file)?, self)?;
+        if !self.used_by.is_empty() {
+            let file = self.path.join(".tytm.fsx.lock");
+            serde_json::to_writer(File::create(file)?, self)?;
+        }
         Ok(())
     }
-    
+
     pub(crate) fn path(&self) -> &Path {
         &self.path
     }
