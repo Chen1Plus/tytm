@@ -28,8 +28,7 @@ impl Manifest {
         let tmp_dir = tempdir()?;
         println!("Fetching manifests...");
         git2::Repository::clone("https://github.com/Chen1Plus/tytm", &tmp_dir)?;
-        Obj::from(tmp_dir.path().join("manifest"))
-            .move_to(defs::TYTM_MANIFEST.as_path().parent().unwrap())?;
+        Obj::from(tmp_dir.path().join("manifest")).move_inside_to(defs::TYTM_MANIFEST.as_path())?;
         println!("Manifests updated.");
         Ok(())
     }
@@ -42,13 +41,11 @@ impl Manifest {
     }
 
     pub(crate) fn store_package(&self) -> Result<Package> {
-        let tmp = self.source.download()?;
-
         Ok(Package {
             id: self.id.clone(),
             name: self.name.clone(),
             version: self.version.clone(),
-            base_path: tmp,
+            base_path: self.source.download()?,
             assets: self.assets.clone(),
             pkgs: self.pkgs.clone(),
             default: self.default.clone(),
