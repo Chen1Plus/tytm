@@ -19,3 +19,18 @@ MacOS:
 ```zsh
 ./tytm add blackout
 ```
+
+## Chernobyl
+
+> Author: 晦涩弗里曼  
+> [Click for more details](themes/chernobyl)
+
+Windows:
+```powershell
+./tytm.exe add chernobyl
+```
+
+MacOS:
+```zsh
+./tytm add chernobyl
+```

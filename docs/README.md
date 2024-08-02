@@ -1,8 +1,6 @@
-# Quick Start
+# Installation
 
-## Installation
-
-### Windows
+#### Windows
 
 1. Download the `tytm.exe` from the [releases page](https://github.com/Chen1Plus/tytm/releases/latest).
 2. Place the executable in your desired directory.
@@ -11,11 +9,14 @@
 ./tytm.exe update
 ```
 
-### MacOS
+<!-- #### MacOS
 
-> Currently, a pre-built executable is not available. See [build](#build) for more.
+Currently, a pre-built executable is not available. See [build](#build) for more. -->
 
-## Usage
+# Usage
+
+
+<!-- ## Usage
 
 See `./tytm help` for more information and browse [themes](themes/index) to install themes.
 
@@ -54,4 +55,4 @@ An example manifest (OneDark). The file name is same as the id.
 - "Git": clone a repository
 
 "content" means the root folder of css and assets.  
-"excludes" means files in "content" but unnecessary, such as readme or license. You may also refer to `manifest/`.
+"excludes" means files in "content" but unnecessary, such as readme or license. You may also refer to `manifest/`. -->
