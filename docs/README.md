@@ -13,11 +13,11 @@
 
 ### MacOS
 
-> Currently, a pre-built executable is not available. See [build](https://chen1plus.github.io/tytm/#/?id=build) for more.
+> Currently, a pre-built executable is not available. See [build](#build) for more.
 
 ## Usage
 
-See `./tytm help` for more information and browse [themes](https://chen1plus.github.io/tytm/#/themes) to install themes.
+See `./tytm help` for more information and browse [themes](themes/index) to install themes.
 
 # Build
 

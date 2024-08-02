@@ -5,7 +5,7 @@ These are supported themes.
 ## Blackout
 
 > Author: 晦涩弗里曼  
-> Details: https://chen1plus.github.io/tytm/#/themes/blackout
+> [Click for more details](themes/blackout)
 
 Windows:
 ```powershell
