@@ -79,7 +79,7 @@ fn main() {
             let mut subs = if no_default {
                 Vec::new()
             } else {
-                pkg.default.clone()
+                pkg.default.iter().map(|x| x.to_owned()).collect()
             };
 
             if let Some(sub) = sub {

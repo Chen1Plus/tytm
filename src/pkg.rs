@@ -20,7 +20,7 @@ pub(crate) struct Manifest {
     source: Box<dyn source::Source>,
     assets: HashSet<ObjName>,
     pkgs: Vec<SubPackage>,
-    default: Vec<String>,
+    default: HashSet<String>,
 }
 
 impl Manifest {
@@ -60,7 +60,7 @@ pub(crate) struct Package {
     base_path: TempDir,
     assets: HashSet<ObjName>,
     pkgs: Vec<SubPackage>,
-    pub(crate) default: Vec<String>,
+    pub(crate) default: HashSet<String>,
 }
 
 impl Package {
