@@ -1,6 +1,6 @@
 use std::fs::{self, File};
 use std::io;
-use std::path::{self, Path, PathBuf};
+use std::path::Path;
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -81,7 +81,7 @@ impl Package {
             assets: self
                 .assets
                 .iter()
-                .map(|x| x.base(defs::TYPORA_THEME.as_path()).as_ref().to_owned())
+                .map(|x| x.base(defs::TYPORA_THEME.as_path()))
                 .collect(),
             pkgs: Vec::new(),
         })
@@ -96,7 +96,7 @@ struct SubPackage {
 
 impl SubPackage {
     fn install(&self, from: &Path) -> Result<InstalledSubPackage> {
-        let file = path::absolute(self.file.base(defs::TYPORA_THEME.as_path()))?;
+        let file = self.file.base(defs::TYPORA_THEME.as_path());
         fs::rename(self.file.base(from), &file)?;
         Ok(InstalledSubPackage {
             id: self.id.clone(),
@@ -110,14 +110,14 @@ pub(crate) struct InstalledPackage {
     id: String,
     name: String,
     version: String,
-    assets: Vec<PathBuf>,
+    assets: Vec<Obj>,
     pkgs: Vec<InstalledSubPackage>,
 }
 
 #[derive(Serialize, Deserialize)]
 struct InstalledSubPackage {
     id: String,
-    file: PathBuf,
+    file: Obj,
 }
 
 impl InstalledPackage {
