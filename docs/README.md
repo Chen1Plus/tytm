@@ -1,30 +1,40 @@
 # Quick Start
 
-```bash
-./tytm update
-```
+## Installation
 
-## Usage:
-```bash
+### Windows
+
+1. Download the `tytm.exe` from the [releases page](https://github.com/Chen1Plus/tytm/releases/latest).
+2. Place the executable in your desired directory.
+
+```powershell
 ./tytm.exe update
-./tytm.exe add <THEME_ID>
-./tytm.exe add <THEME_ID> --sub <SUB_THEME_ID>
-```
-<THEME_ID> will be theme's name but use lowercase and use dash to replace whitespace. Ex: "GitHub Night" has id "github-night"
-```bash
-./tytm.exe rm <THEME_ID>
-./tytm.exe rm <THEME_ID> --sub <SUB_THEME_ID>
 ```
 
-## Build
+### MacOS
+
+> Currently, a pre-built executable is not available. See, #build for more.
+
+## Usage
+
+See `./tytm help`
+
+# Themes
+
+
+
+# Build
+
 1. install rust (https://www.rust-lang.org/tools/install)
 2. `cargo build --release`
 
-## Contribute: 
+# Contribute
 
 ### Add Package Manifest
+
 Refer to `manifest/`. Readme may be outdated.  
 An example manifest (OneDark). The file name is same as the id.
+
 ```json
 {
     "id": "onedark",
