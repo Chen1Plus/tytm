@@ -19,7 +19,7 @@ pub(crate) struct Manifest {
     version: String,
     source: Box<dyn source::Source>,
     assets: HashSet<ObjName>,
-    pkgs: Vec<SubPackage>,
+    pkgs: HashSet<SubPackage>,
     default: HashSet<String>,
 }
 
@@ -59,7 +59,7 @@ pub(crate) struct Package {
     version: String,
     base_path: TempDir,
     assets: HashSet<ObjName>,
-    pkgs: Vec<SubPackage>,
+    pkgs: HashSet<SubPackage>,
     pub(crate) default: HashSet<String>,
 }
 
@@ -84,12 +84,12 @@ impl Package {
                 .iter()
                 .map(|x| x.base(defs::TYPORA_THEME.as_path()))
                 .collect(),
-            pkgs: Vec::new(),
+            pkgs: HashSet::new(),
         })
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 struct SubPackage {
     id: String,
     file: ObjName,
@@ -112,10 +112,10 @@ pub(crate) struct InstalledPackage {
     name: String,
     version: String,
     assets: HashSet<Obj>,
-    pkgs: Vec<InstalledSubPackage>,
+    pkgs: HashSet<InstalledSubPackage>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(PartialEq, Eq, Hash, Serialize, Deserialize)]
 struct InstalledSubPackage {
     id: String,
     file: Obj,
@@ -148,7 +148,7 @@ impl InstalledPackage {
     }
 
     pub(crate) fn add_sub(&mut self, id: &str, from: &Package) -> Result<()> {
-        self.pkgs.push(
+        self.pkgs.insert(
             from.pkgs
                 .iter()
                 .find(|pkg| pkg.id == id)
