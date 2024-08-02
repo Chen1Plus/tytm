@@ -3,11 +3,13 @@
 > Author: 晦涩弗里曼  
 > Repository: https://github.com/obscurefreeman/typora_theme_blackout
 
-```shell
-# Windows
+Windows:
+```powershell
 ./tytm.exe add blackout
+```
 
-# MacOS
+MacOS:
+```zsh
 ./tytm add blackout
 ```
 
