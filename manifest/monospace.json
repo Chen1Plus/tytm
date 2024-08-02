@@ -22,12 +22,12 @@
             "file": "monospace.css"
         },
         {
-            "id": "monospace-dark",
+            "id": "dark",
             "file": "monospace-dark.css"
         }
     ],
     "default": [
         "monospace",
-        "monospace-dark"
+        "dark"
     ]
 }
