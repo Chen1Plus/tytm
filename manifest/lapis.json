@@ -21,12 +21,12 @@
             "file": "lapis.css"
         },
         {
-            "id": "lapis-dark",
+            "id": "dark",
             "file": "lapis-dark.css"
         }
     ],
     "default": [
         "lapis",
-        "lapis-dark"
+        "dark"
     ]
 }
