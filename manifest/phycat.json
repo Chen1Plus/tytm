@@ -1,0 +1,23 @@
+{
+  "id": "phycat",
+  "name": "Phycat",
+  "version": "1.0.0",
+  "source": {
+    "type": "Zip",
+    "value": {
+      "url": "https://github.com/sumruler/typora-theme-phycat/releases/download/v1.0.0/typora-theme-phycat.zip",
+      "content": "./",
+      "excludes": ["README.md"]
+    }
+  },
+  "assets": ["phycat"],
+  "pkgs": [
+    { "id": "mint", "file": "phycat-mint.css" },
+    { "id": "green", "file": "phycat-green.css" },
+    { "id": "dark", "file": "phycat-dark.css" },
+    { "id": "purple", "file": "phycat-purple.css" },
+    { "id": "orange", "file": "phycat-orange.css" },
+    { "id": "plusblue", "file": "phycat-plusblue.css" }
+  ],
+  "default": ["dark"]
+}
