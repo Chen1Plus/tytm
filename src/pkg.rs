@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::fs::{self, File};
 use std::io;
 use std::path::Path;
@@ -17,7 +18,7 @@ pub(crate) struct Manifest {
     name: String,
     version: String,
     source: Box<dyn source::Source>,
-    assets: Vec<ObjName>,
+    assets: HashSet<ObjName>,
     pkgs: Vec<SubPackage>,
     default: Vec<String>,
 }
@@ -57,7 +58,7 @@ pub(crate) struct Package {
     name: String,
     version: String,
     base_path: TempDir,
-    assets: Vec<ObjName>,
+    assets: HashSet<ObjName>,
     pkgs: Vec<SubPackage>,
     pub(crate) default: Vec<String>,
 }

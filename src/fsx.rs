@@ -73,7 +73,7 @@ impl AsRef<Path> for Obj {
 }
 
 // An object that represents a file or a whole directory, which has a UTF-8 name.
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub(crate) struct ObjName(String);
 
 impl ObjName {
