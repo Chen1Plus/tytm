@@ -8,15 +8,6 @@ use serde_json as json;
 
 pub(crate) mod defs;
 
-/// Ensure that a directory exists, failed if missing parent directories.
-#[deprecated]
-pub(crate) fn ensure_dir<P: AsRef<Path>>(path: P) -> io::Result<()> {
-    if !path.as_ref().exists() {
-        fs::create_dir(path)?;
-    }
-    Ok(())
-}
-
 // An object that represents a file or a whole directory.
 // note: can not be root directory
 #[derive(Clone, Serialize, Deserialize)]

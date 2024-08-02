@@ -1,13 +1,10 @@
-use std::{path::PathBuf, sync::LazyLock};
-
-use super::ensure_dir;
+use std::path::{Path, PathBuf};
+use std::sync::LazyLock;
+use std::{fs, io};
 
 /// The user's data directory.
 static DATA: LazyLock<PathBuf> =
     LazyLock::new(|| dirs::data_dir().expect("Failed to find user's data directory"));
-/// The user's cache directory.
-static CACHE: LazyLock<PathBuf> =
-    LazyLock::new(|| dirs::cache_dir().expect("Failed to find user's cache directory"));
 
 #[cfg(debug_assertions)]
 static TYPORA: LazyLock<PathBuf> = LazyLock::new(|| PathBuf::from("debug-dirs").join("Typora"));
@@ -54,4 +51,13 @@ pub(crate) fn init() {
 
     ensure_dir(TYTM_MANIFEST.as_path()).expect("Failed to create TyTM manifest directory");
     assert!(TYTM_MANIFEST.is_dir());
+}
+
+/// Ensure that a directory exists, failed if missing parent directories.
+#[deprecated]
+fn ensure_dir<P: AsRef<Path>>(path: P) -> io::Result<()> {
+    if !path.as_ref().exists() {
+        fs::create_dir(path)?;
+    }
+    Ok(())
 }
