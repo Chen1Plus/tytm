@@ -32,6 +32,10 @@ enum Commands {
         /// The sub-packages to add
         #[arg(short, long)]
         sub: Option<Vec<String>>,
+
+        /// decide whether to install the default sub-themes
+        #[arg(long)]
+        no_default: bool,
     },
 
     /// Remove a theme
@@ -59,7 +63,11 @@ fn main() {
             pkg::Manifest::update().unwrap();
         }
 
-        Commands::Add { theme, sub } => {
+        Commands::Add {
+            theme,
+            sub,
+            no_default,
+        } => {
             let pkg = Manifest::get(&theme)
                 .expect("Theme not found")
                 .store_package()
@@ -68,8 +76,21 @@ fn main() {
             let mut installed_pkg =
                 InstalledPackage::get(&theme).unwrap_or_else(|_| pkg.install().unwrap());
 
-            let sub = &sub.unwrap_or_else(|| pkg.default.clone());
-            for id in sub {
+            let mut subs = if no_default {
+                Vec::new()
+            } else {
+                pkg.default.clone()
+            };
+
+            if let Some(sub) = sub {
+                for id in &sub {
+                    if !subs.contains(id) {
+                        subs.push(id.clone());
+                    }
+                }
+            }
+
+            for id in &subs {
                 installed_pkg.add_sub(id, &pkg).unwrap();
             }
             installed_pkg.save().unwrap();
