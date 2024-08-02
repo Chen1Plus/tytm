@@ -10,7 +10,7 @@ pub(crate) mod defs;
 
 // An object that represents a file or a whole directory.
 // note: can not be root directory
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub(crate) struct Obj(PathBuf);
 
 impl Obj {

@@ -111,7 +111,7 @@ pub(crate) struct InstalledPackage {
     id: String,
     name: String,
     version: String,
-    assets: Vec<Obj>,
+    assets: HashSet<Obj>,
     pkgs: Vec<InstalledSubPackage>,
 }
 
