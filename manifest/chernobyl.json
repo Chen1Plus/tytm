@@ -5,7 +5,7 @@
     "source": {
         "type": "Zip",
         "value": {
-            "url": "https://github.com/obscurefreeman/typora_theme_blackout/releases/download/V1.0.7/blackout_theme_pack.zip",
+            "url": "https://github.com/obscurefreeman/typora_theme_blackout/releases/download/V1.0.7/blackout_theme_chernobyl.zip",
             "content": "./",
             "excludes": []
         }
@@ -19,7 +19,7 @@
             "file": "chernobyl.css"
         },
         {
-            "id": "chernobyl-blue",
+            "id": "blue",
             "file": "chernobyl-blue.css"
         }
     ],
