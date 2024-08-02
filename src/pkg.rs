@@ -3,7 +3,6 @@ use std::io;
 use std::path::{self, Path, PathBuf};
 
 use anyhow::Result;
-use relative_path::RelativePathBuf;
 use serde::{Deserialize, Serialize};
 use serde_json as json;
 use tempfile::{tempdir, TempDir};
@@ -92,13 +91,13 @@ impl Package {
 #[derive(Clone, Serialize, Deserialize)]
 struct SubPackage {
     id: String,
-    file: RelativePathBuf,
+    file: ObjName,
 }
 
 impl SubPackage {
     fn install(&self, from: &Path) -> Result<InstalledSubPackage> {
-        let file = path::absolute(defs::TYPORA_THEME.join(&self.file.file_name().unwrap()))?;
-        fs::rename(self.file.to_logical_path(from), &file)?;
+        let file = path::absolute(self.file.base(defs::TYPORA_THEME.as_path()))?;
+        fs::rename(self.file.base(from), &file)?;
         Ok(InstalledSubPackage {
             id: self.id.clone(),
             file,
