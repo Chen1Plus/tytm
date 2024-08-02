@@ -21,14 +21,6 @@
         {
             "id": "gamer",
             "file": "blackout-gamer.css"
-        },
-        {
-            "id": "chernobyl",
-            "file": "chernobyl.css"
-        },
-        {
-            "id": "chernobyl-blue",
-            "file": "chernobyl-blue.css"
         }
     ],
     "default": [
