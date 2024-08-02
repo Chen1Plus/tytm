@@ -1,6 +1,9 @@
 # Themes
 
-These are supported themes.
+Each theme has its own ID and includes one or more sub-themes. To install the default sub-themes, simply use `./tytm add <ID>`.  
+If you prefer to install a specific sub-theme, use the `--sub` flag. The `--no-default` flag allows you to add a theme without its default sub-themes.
+
+Below are themes that can be installed by TyTM.
 
 ## Blackout
 

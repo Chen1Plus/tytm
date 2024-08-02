@@ -21,23 +21,27 @@ Have you been using Typora for writing for a long time, but suffer from no suita
 
 长期使用 Typora 写作，却苦于没有合适的夜间主题？历经小半年的打磨，Blackout（你可以叫它黑夜封锁或黑障）终于成为了一款成熟的夜间主题。和其他夜间主题不同，Blackout 有着清晰的文字和优雅的圆角。无论是在宿舍攥写论文，还是在图书馆记录笔记，Blackout 都是你的绝佳选择。一个好的主题能给你节省不少时间。
 
-![185349](https://theme.typora.io/media/theme/obscurefreeman/185349.png)
+![](https://theme.typora.io/media/theme/obscurefreeman/185349.png)
 
 Experience is the mother of wisdom, and the choice of many features of the Blackout theme is related to my long-term experience in using Typora. To avoid images taking up a lot of space while writing, inserted images are scaled to fit. To prevent the writing position from being too narrow, the page can still be scrolled down a certain distance after scrolling. In addition, I also selected some excellent themes to compare their pros and cons, choosing the best and discarding the dross.
 
 实践出真知，Blackout 主题很多特点的取舍都关乎我长期使用 Typora 的经验。为避免在写作时图片占据大量空间，插入的图片会被缩放至合适大小。为避免写作位置过于狭窄，页面滚动完后仍然能往下滚一段距离。此外我还选择了一些优秀的主题来比较它们的优劣，取其精华，去其糟粕。
 
-![185257](https://theme.typora.io/media/theme/obscurefreeman/185257.png)
+![](https://theme.typora.io/media/theme/obscurefreeman/185257.png)
 
 ## Sub Themes
 
+### Blackout (default)
+
 ### Gamer
 
-```shell
-# Windows
+Windows:
+```powershell
 ./tytm.exe add blackout -s gamer
+```
 
-# MacOS
+MacOS:
+```zsh
 ./tytm add blackout -s gamer
 ```
 
@@ -45,4 +49,4 @@ The Blackout Gamer theme is a theme suitable for presentations, making the readi
 
 Blackout Gamer 主题是一个适用于展示的主题，阅读体验很舒适且充满现代感。这个主题不会缩小图片，但是继承了 Blackout 主题优美的圆角设计。
 
-![185213](https://theme.typora.io/media/theme/obscurefreeman/185213.png)
+![](https://theme.typora.io/media/theme/obscurefreeman/185213.png)
