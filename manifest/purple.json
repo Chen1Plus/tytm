@@ -22,23 +22,23 @@
             "file": "purple.css"
         },
         {
-            "id": "purple-blue",
+            "id": "blue",
             "file": "purple-blue.css"
         },
         {
-            "id": "purple-cesno",
+            "id": "cesno",
             "file": "purple-cesno.css"
         },
         {
-            "id": "purple-classic",
+            "id": "classic",
             "file": "purple-classic.css"
         },
         {
-            "id": "purple-green",
+            "id": "green",
             "file": "purple-green.css"
         },
         {
-            "id": "purple-plain",
+            "id": "plain",
             "file": "purple-plain.css"
         }
     ],
