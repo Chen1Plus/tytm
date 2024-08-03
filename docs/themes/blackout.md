@@ -3,13 +3,7 @@
 > Author: 晦涩弗里曼  
 > Repository: https://github.com/obscurefreeman/typora_theme_blackout
 
-Windows:
-```powershell
-./tytm.exe add blackout
-```
-
-MacOS:
-```zsh
+```shell
 ./tytm add blackout
 ```
 
@@ -35,14 +29,8 @@ Experience is the mother of wisdom, and the choice of many features of the Black
 
 ### Gamer
 
-Windows:
-```powershell
+```shell
 ./tytm.exe add blackout -s gamer
-```
-
-MacOS:
-```zsh
-./tytm add blackout -s gamer
 ```
 
 The Blackout Gamer theme is a theme suitable for presentations, making the reading experience comfortable and modern. This theme does not scale images but inherits the beautiful rounded corner design of the Blackout theme.

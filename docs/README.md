@@ -6,7 +6,7 @@
 2. Place the executable in your desired directory.
 
 ```powershell
-./tytm.exe update
+./tytm update
 ```
 
 <!-- #### MacOS

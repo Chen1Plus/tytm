@@ -10,13 +10,7 @@ Below are themes that can be installed by TyTM.
 > Author: 晦涩弗里曼  
 > [Click for more details](themes/blackout)
 
-Windows:
-```powershell
-./tytm.exe add blackout
-```
-
-MacOS:
-```zsh
+```shell
 ./tytm add blackout
 ```
 
@@ -25,12 +19,6 @@ MacOS:
 > Author: 晦涩弗里曼  
 > [Click for more details](themes/chernobyl)
 
-Windows:
-```powershell
-./tytm.exe add chernobyl
-```
-
-MacOS:
-```zsh
+```shell
 ./tytm add chernobyl
 ```

@@ -3,13 +3,7 @@
 > Author: 晦涩弗里曼  
 > Repository: https://github.com/obscurefreeman/typora_theme_blackout
 
-Windows:
-```powershell
-./tytm.exe add chernobyl
-```
-
-MacOS:
-```zsh
+```shell
 ./tytm add chernobyl
 ```
 
@@ -39,12 +33,6 @@ The color scheme of this theme was originally set to be green. During the creati
 
 ### Blue
 
-Windows:
-```powershell
-./tytm.exe add chernobyl -s blue
-```
-
-MacOS:
-```zsh
+```shell
 ./tytm add chernobyl -s blue
 ```
