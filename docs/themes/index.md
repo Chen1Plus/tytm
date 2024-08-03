@@ -10,15 +10,7 @@ Below are themes that can be installed by TyTM.
 > Author: 晦涩弗里曼  
 > [Click for more details](themes/blackout)
 
-```shell
-./tytm add blackout
-```
-
 ## Chernobyl
 
 > Author: 晦涩弗里曼  
 > [Click for more details](themes/chernobyl)
-
-```shell
-./tytm add chernobyl
-```
