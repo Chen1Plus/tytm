@@ -14,3 +14,8 @@ Below are themes that can be installed by TyTM.
 
 > Author: 晦涩弗里曼  
 > [Click for more details](themes/chernobyl)
+
+## Lapis
+
+> Author: YiNN  
+> [Click for more details](themes/lapis)
