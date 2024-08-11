@@ -54,13 +54,13 @@ enum Commands {
     List,
 }
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     fsx::defs::init();
 
     let cli = Cli::parse();
     match cli.command {
         Commands::Update => {
-            pkg::Manifest::update().unwrap();
+            pkg::Manifest::update()?;
         }
 
         Commands::Add {
@@ -70,8 +70,7 @@ fn main() {
         } => {
             let pkg = Manifest::get(&theme)
                 .expect("Theme not found")
-                .store_package()
-                .unwrap();
+                .store_package()?;
 
             let mut installed_pkg =
                 InstalledPackage::get(&theme).unwrap_or_else(|_| pkg.install().unwrap());
@@ -91,28 +90,27 @@ fn main() {
             }
 
             for id in &subs {
-                installed_pkg.add_sub(id, &pkg).unwrap();
+                installed_pkg.add_sub(id, &pkg)?;
             }
-            installed_pkg.save().unwrap();
+            installed_pkg.save()?;
         }
 
         Commands::Remove { theme, sub } => {
             let mut pkg = InstalledPackage::get(&theme).expect("Theme not installed");
             if let Some(id) = sub {
                 for id in &id {
-                    pkg.remove_sub(id).unwrap();
+                    pkg.remove_sub(id)?;
                 }
-                pkg.save().unwrap();
+                pkg.save()?;
             } else {
-                pkg.uninstall().unwrap();
-                fs::remove_file(fsx::defs::TYPORA_MANIFEST.join(theme + ".json")).unwrap();
+                pkg.uninstall()?;
+                fs::remove_file(fsx::defs::TYPORA_MANIFEST.join(theme + ".json"))?;
             }
         }
 
         Commands::List => {
             println!("Installed themes:");
-            fs::read_dir(fsx::defs::TYPORA_MANIFEST.as_path())
-                .unwrap()
+            fs::read_dir(fsx::defs::TYPORA_MANIFEST.as_path())?
                 .into_iter()
                 .filter_map(|e| e.ok())
                 .filter(|e| e.path().is_file())
@@ -120,4 +118,6 @@ fn main() {
                 .for_each(|e| println!("{}", e.to_str().unwrap()));
         }
     }
+
+    Ok(())
 }
