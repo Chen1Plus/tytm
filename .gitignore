@@ -1,7 +1,8 @@
 .DS_Store
 
-.vscode
+/.vscode/
 
-target
+/target/
+Cargo.lock
 
-debug-dirs
+/debug-dirs/
