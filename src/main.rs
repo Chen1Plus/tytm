@@ -2,10 +2,12 @@ use std::fs;
 
 use clap::{Parser, Subcommand};
 
+mod cmds;
 mod fsx;
 mod pkg;
 
 use pkg::{InstalledPackage, Manifest};
+use reqwest::Url;
 
 #[derive(Parser)]
 #[command(
@@ -26,16 +28,8 @@ enum Commands {
 
     /// Add a new theme
     Add {
-        /// The theme to add
-        theme: String,
-
-        /// The sub-packages to add
-        #[arg(short, long)]
-        sub: Option<Vec<String>>,
-
-        /// decide whether to install the default sub-themes
-        #[arg(long)]
-        no_default: bool,
+        /// The url of the theme to add
+        url: Url,
     },
 
     /// Remove a theme
@@ -63,36 +57,9 @@ fn main() -> anyhow::Result<()> {
             pkg::Manifest::update()?;
         }
 
-        Commands::Add {
-            theme,
-            sub,
-            no_default,
-        } => {
-            let pkg = Manifest::get(&theme)
-                .expect("Theme not found")
-                .store_package()?;
-
-            let mut installed_pkg =
-                InstalledPackage::get(&theme).unwrap_or_else(|_| pkg.install().unwrap());
-
-            let mut subs = if no_default {
-                Vec::new()
-            } else {
-                pkg.default.iter().map(|x| x.to_owned()).collect()
-            };
-
-            if let Some(sub) = sub {
-                for id in &sub {
-                    if !subs.contains(id) {
-                        subs.push(id.clone());
-                    }
-                }
-            }
-
-            for id in &subs {
-                installed_pkg.add_sub(id, &pkg)?;
-            }
-            installed_pkg.save()?;
+        Commands::Add { url } => {
+            use cmds::add::UrlType;
+            cmds::add::entry(url, UrlType::Zip)?;
         }
 
         Commands::Remove { theme, sub } => {
