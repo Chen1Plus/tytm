@@ -1,12 +1,11 @@
 use std::collections::HashSet;
 use std::fs::{self, File};
 use std::io;
-use std::path::Path;
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use serde_json as json;
-use tempfile::{tempdir, TempDir};
+use tempfile::tempdir;
 
 use crate::fsx::{defs, Obj, ObjName, ShareDir};
 
@@ -32,78 +31,12 @@ impl Manifest {
         println!("Manifests updated.");
         Ok(())
     }
-
-    pub(crate) fn get(id: &str) -> io::Result<Self> {
-        Ok(json::from_reader(File::open(
-            defs::TYTM_MANIFEST.join(id).with_extension("json"),
-        )?)
-        .expect("Invalid manifest."))
-    }
-
-    pub(crate) fn store_package(&self) -> Result<Package> {
-        Ok(Package {
-            id: self.id.clone(),
-            name: self.name.clone(),
-            version: self.version.clone(),
-            base_path: self.source.download()?,
-            assets: self.assets.clone(),
-            pkgs: self.pkgs.clone(),
-            default: self.default.clone(),
-        })
-    }
-}
-
-pub(crate) struct Package {
-    id: String,
-    name: String,
-    version: String,
-    base_path: TempDir,
-    assets: HashSet<ObjName>,
-    pkgs: HashSet<SubPackage>,
-    pub(crate) default: HashSet<String>,
-}
-
-impl Package {
-    pub(crate) fn install(&self) -> Result<InstalledPackage> {
-        for asset in &self.assets {
-            let dst = asset.base(defs::TYPORA_THEME.as_path());
-            let mut real_asset = asset.base(&self.base_path);
-
-            // debug_assert!(real_asset.is_dir());
-
-            ShareDir::get(&dst)?.used_by(&self.id)?;
-            real_asset.move_to(defs::TYPORA_THEME.as_path())?;
-        }
-
-        Ok(InstalledPackage {
-            id: self.id.clone(),
-            name: self.name.clone(),
-            version: self.version.clone(),
-            assets: self
-                .assets
-                .iter()
-                .map(|x| x.base(defs::TYPORA_THEME.as_path()))
-                .collect(),
-            pkgs: HashSet::new(),
-        })
-    }
 }
 
 #[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 struct SubPackage {
     id: String,
     file: ObjName,
-}
-
-impl SubPackage {
-    fn install(&self, from: &Path) -> Result<InstalledSubPackage> {
-        let file = self.file.base(defs::TYPORA_THEME.as_path());
-        fs::rename(self.file.base(from), &file)?;
-        Ok(InstalledSubPackage {
-            id: self.id.clone(),
-            file,
-        })
-    }
 }
 
 #[derive(Default, Serialize, Deserialize)]
@@ -145,17 +78,6 @@ impl InstalledPackage {
         }
         self.pkgs.clear();
         self.clear_assets()
-    }
-
-    pub(crate) fn add_sub(&mut self, id: &str, from: &Package) -> Result<()> {
-        self.pkgs.insert(
-            from.pkgs
-                .iter()
-                .find(|pkg| pkg.id == id)
-                .expect("Sub theme not found")
-                .install(&from.base_path.path())?,
-        );
-        Ok(())
     }
 
     // do nothing if the sub theme not installed
