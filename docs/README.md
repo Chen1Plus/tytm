@@ -1,4 +1,4 @@
-# Installation
+<!-- # Installation
 
 #### Windows
 
@@ -7,7 +7,7 @@
 
 ```powershell
 ./tytm update
-```
+``` -->
 
 <!-- #### MacOS
 
@@ -15,29 +15,33 @@ Currently, a pre-built executable is not available. See [build](#build) for more
 
 # Usage
 
-#### Update manifests
+<!-- #### Update manifests
 
 TyTM uses manifests to obtain the necessary information for fetching themes.
 
 ```shell
 ./tytm update
-```
+``` -->
 
 #### Install a theme
 
-You can install a theme using its unique ID. Browse [themes](themes/index) to see the available themes.
+You can install a theme using its url.
+
+- If the url points to a zip file, use `-u zip` flag.
+- If the url points to a git repository, use `-u git` flag.
+
 
 ```shell
-./tytm add <ID>
+./tytm add -u <TYPE> <URL>
 ```
 
-#### Remove a theme
+<!-- #### Remove a theme
 
 You can simply use the same id to remove a theme.
 
 ```shell
 ./tytm remove <ID>
-```
+``` -->
 
 <!--
 

@@ -1,16 +1,9 @@
-use std::collections::HashSet;
-use std::fs::File;
 use std::path::PathBuf;
 use std::{fs, io, path::Path};
 
-use serde::{Deserialize, Serialize};
-use serde_json as json;
-
-pub(crate) mod defs;
-
 // An object that represents a file or a whole directory.
 // note: can not be root directory
-#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub(crate) struct Obj(PathBuf);
 
 impl Obj {
@@ -69,67 +62,5 @@ impl From<PathBuf> for Obj {
 impl AsRef<Path> for Obj {
     fn as_ref(&self) -> &Path {
         &self.0
-    }
-}
-
-// An object that represents a file or a whole directory, which has a UTF-8 name.
-#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub(crate) struct ObjName(String);
-
-impl ObjName {
-    pub(crate) fn base<P: AsRef<Path>>(&self, path: P) -> Obj {
-        Obj(path.as_ref().join(&self.0))
-    }
-}
-
-#[derive(Serialize, Deserialize)]
-pub(crate) struct ShareDir {
-    path: PathBuf,
-    used_by: HashSet<String>,
-}
-
-impl ShareDir {
-    pub(crate) fn get<P: AsRef<Path>>(path: P) -> io::Result<Self> {
-        let file = path.as_ref().join(".tytm.fsx.lock");
-
-        Ok(if file.is_file() {
-            let dir: ShareDir = json::from_reader(File::open(&file)?)?;
-            if dir.path != path.as_ref() {
-                panic!("Got a broken ShareDir at {:?}", path.as_ref())
-            }
-            dir
-        } else {
-            if !path.as_ref().is_dir() {
-                fs::create_dir_all(&path)?;
-            }
-
-            Self {
-                path: path.as_ref().to_path_buf(),
-                used_by: HashSet::new(),
-            }
-        })
-    }
-
-    pub(crate) fn used_by<S: ToString>(&mut self, by: S) -> io::Result<()> {
-        self.used_by.insert(by.to_string());
-        self.save()
-    }
-
-    pub(crate) fn removed_by<S: AsRef<str>>(&mut self, by: S) -> io::Result<()> {
-        self.used_by.retain(|x| x != by.as_ref());
-        if self.used_by.is_empty() {
-            Obj::from(self.path.clone()).remove()
-        } else {
-            self.save()
-        }
-    }
-
-    // this will return error if you tend to remove a deleted directory
-    fn save(&self) -> io::Result<()> {
-        let file = self.path.join(".tytm.fsx.lock");
-        if file.is_file() {
-            fs::remove_file(&file)?;
-        }
-        json::to_writer(File::create(&file)?, self).map_err(Into::into)
     }
 }

@@ -1,4 +1,4 @@
-# TyTM <small>0.2.6</small>
+# TyTM <small>0.3.0</small>
 
 > A theme manager for Typora.
 
