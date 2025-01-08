@@ -3,7 +3,6 @@ use clap::{Parser, Subcommand};
 mod cmds;
 mod env;
 mod fsx;
-mod pkg;
 
 #[derive(Parser)]
 #[command(
