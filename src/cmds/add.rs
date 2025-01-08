@@ -1,26 +1,37 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use reqwest::Url;
+use clap::ValueEnum;
 use tempfile::{tempdir, tempfile};
 use zip::ZipArchive;
 
 use crate::{env, fsx};
 
+#[derive(Clone, Copy, ValueEnum)]
 pub enum UrlType {
     Git,
     Zip,
 }
 
-pub fn entry(url: Url, url_type: UrlType) -> anyhow::Result<()> {
-    let mut tmp_file = tempfile()?;
+pub fn entry(url: &str, url_type: UrlType) -> anyhow::Result<()> {
     let tmp_dir = tempdir()?;
 
-    println!("Downloading ...");
-    reqwest::blocking::get(url)?.copy_to(&mut tmp_file)?;
+    match url_type {
+        UrlType::Git => {
+            println!("Cloning ...");
+            git2::Repository::clone(url, &tmp_dir)?;
+        }
 
-    println!("Extracting...");
-    ZipArchive::new(tmp_file)?.extract(&tmp_dir)?;
+        UrlType::Zip => {
+            let mut tmp_file = tempfile()?;
+
+            println!("Downloading ...");
+            reqwest::blocking::get(url)?.copy_to(&mut tmp_file)?;
+
+            println!("Extracting...");
+            ZipArchive::new(tmp_file)?.extract(&tmp_dir)?;
+        }
+    }
 
     let base = find_base_dir(tmp_dir.path())?;
     for entry in fs::read_dir(&base)? {

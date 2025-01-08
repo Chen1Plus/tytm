@@ -1,5 +1,4 @@
 use clap::{Parser, Subcommand};
-use reqwest::Url;
 
 mod cmds;
 mod env;
@@ -25,8 +24,11 @@ enum Commands {
 
     /// Add a new theme
     Add {
-        /// The url of the theme to add
-        url: Url,
+        /// The url of the theme
+        url: String,
+        /// The url type
+        #[arg(short, long, value_name = "TYPE")]
+        url_type: cmds::add::UrlType,
     },
 
     /// Remove a theme
@@ -54,9 +56,8 @@ fn main() -> anyhow::Result<()> {
             todo!()
         }
 
-        Commands::Add { url } => {
-            use cmds::add::UrlType;
-            cmds::add::entry(url, UrlType::Zip)?;
+        Commands::Add { url, url_type } => {
+            cmds::add::entry(&url, url_type)?;
         }
 
         Commands::Remove { theme, sub } => {
