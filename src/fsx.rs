@@ -6,8 +6,6 @@ use std::{fs, io, path::Path};
 use serde::{Deserialize, Serialize};
 use serde_json as json;
 
-pub(crate) mod defs;
-
 // An object that represents a file or a whole directory.
 // note: can not be root directory
 #[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

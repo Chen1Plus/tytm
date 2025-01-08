@@ -7,7 +7,8 @@ use serde::{Deserialize, Serialize};
 use serde_json as json;
 use tempfile::tempdir;
 
-use crate::fsx::{defs, Obj, ObjName, ShareDir};
+use crate::env;
+use crate::fsx::{Obj, ObjName, ShareDir};
 
 mod source;
 
@@ -27,7 +28,7 @@ impl Manifest {
         let tmp_dir = tempdir()?;
         println!("Fetching manifests...");
         git2::Repository::clone("https://github.com/Chen1Plus/tytm", &tmp_dir)?;
-        Obj::from(tmp_dir.path().join("manifest")).move_inside_to(defs::TYTM_MANIFEST.as_path())?;
+        Obj::from(tmp_dir.path().join("manifest")).move_inside_to(env::TYTM_MANIFEST.as_path())?;
         println!("Manifests updated.");
         Ok(())
     }
@@ -57,7 +58,7 @@ struct InstalledSubPackage {
 impl InstalledPackage {
     pub(crate) fn get(id: &str) -> io::Result<Self> {
         Ok(json::from_reader(File::open(
-            defs::TYPORA_MANIFEST.join(id).with_extension("json"),
+            env::TYPORA_MANIFEST.join(id).with_extension("json"),
         )?)
         .expect("Invalid manifest."))
     }
@@ -65,7 +66,7 @@ impl InstalledPackage {
     pub(crate) fn save(&mut self) -> Result<()> {
         debug_assert!(!self.pkgs.is_empty(), "Try to save an empty package.");
 
-        let path = defs::TYPORA_MANIFEST.join(&self.id).with_extension("json");
+        let path = env::TYPORA_MANIFEST.join(&self.id).with_extension("json");
         if path.exists() {
             fs::remove_file(&path)?;
         }

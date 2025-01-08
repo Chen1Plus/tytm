@@ -5,7 +5,7 @@ use reqwest::Url;
 use tempfile::{tempdir, tempfile};
 use zip::ZipArchive;
 
-use crate::fsx;
+use crate::{env, fsx};
 
 pub enum UrlType {
     Git,
@@ -26,7 +26,7 @@ pub fn entry(url: Url, url_type: UrlType) -> anyhow::Result<()> {
     for entry in fs::read_dir(&base)? {
         let path = entry?.path();
         if path.is_dir() || path.extension() == Some("css".as_ref()) {
-            fsx::Obj::from(path).move_to(fsx::defs::TYPORA_THEME.as_path())?;
+            fsx::Obj::from(path).move_to(env::TYPORA_THEME.as_path())?;
         }
     }
 
