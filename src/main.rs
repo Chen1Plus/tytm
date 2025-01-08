@@ -27,7 +27,7 @@ enum Commands {
         url: String,
         /// The url type
         #[arg(short, long, value_name = "TYPE")]
-        url_type: cmds::add::UrlType,
+        url_type: Option<cmds::add::UrlType>,
     },
 
     /// Remove a theme
@@ -55,8 +55,18 @@ fn main() -> anyhow::Result<()> {
             todo!()
         }
 
-        Commands::Add { url, url_type } => {
-            cmds::add::entry(&url, url_type)?;
+        Commands::Add { url, mut url_type } => {
+            if url_type.is_none() {
+                if url.ends_with(".git") {
+                    url_type = Some(cmds::add::UrlType::Git);
+                } else if url.ends_with(".zip") {
+                    url_type = Some(cmds::add::UrlType::Zip);
+                } else {
+                    return Err(anyhow::anyhow!("Failed to determine the url type"));
+                }
+            }
+            // This unwrap is safe because we have already checked the url_type.
+            cmds::add::entry(&url, url_type.unwrap())?;
         }
 
         Commands::Remove { theme, sub } => {
