@@ -1,14 +1,10 @@
-use std::fs;
-
 use clap::{Parser, Subcommand};
+use reqwest::Url;
 
 mod cmds;
 mod env;
 mod fsx;
 mod pkg;
-
-use pkg::{InstalledPackage, Manifest};
-use reqwest::Url;
 
 #[derive(Parser)]
 #[command(
@@ -55,7 +51,7 @@ fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
     match cli.command {
         Commands::Update => {
-            pkg::Manifest::update()?;
+            todo!()
         }
 
         Commands::Add { url } => {
@@ -64,26 +60,11 @@ fn main() -> anyhow::Result<()> {
         }
 
         Commands::Remove { theme, sub } => {
-            let mut pkg = InstalledPackage::get(&theme).expect("Theme not installed");
-            if let Some(id) = sub {
-                for id in &id {
-                    pkg.remove_sub(id)?;
-                }
-                pkg.save()?;
-            } else {
-                pkg.uninstall()?;
-                fs::remove_file(env::TYPORA_MANIFEST.join(theme + ".json"))?;
-            }
+            todo!()
         }
 
         Commands::List => {
-            println!("Installed themes:");
-            fs::read_dir(env::TYPORA_MANIFEST.as_path())?
-                .into_iter()
-                .filter_map(|e| e.ok())
-                .filter(|e| e.path().is_file())
-                .map(|e| e.path().file_stem().unwrap().to_owned())
-                .for_each(|e| println!("{}", e.to_str().unwrap()));
+            todo!()
         }
     }
 
