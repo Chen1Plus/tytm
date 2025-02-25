@@ -36,6 +36,12 @@ pub fn entry(url: &str, url_type: UrlType) -> anyhow::Result<()> {
     let base = find_base_dir(tmp_dir.path())?;
     for entry in fs::read_dir(&base)? {
         let path = entry?.path();
+
+        // this unwrap is safe because we know the path exists
+        if path.file_name().unwrap().to_str() == Some(".git") {
+            continue;
+        }
+
         if path.is_dir() || path.extension() == Some("css".as_ref()) {
             fsx::Obj::from(path).move_to(env::TYPORA_THEME.as_path())?;
         }
